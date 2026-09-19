@@ -6,8 +6,26 @@ function copyInstallCommand(btn, text) {
   });
 }
 
-// Met en surbrillance l'entrée de sommaire correspondant à la section visible (page docs).
+// Menu mobile (nav du site)
 document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.querySelector('.nav-toggle');
+  const menu = document.querySelector('.mobile-menu');
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => menu.classList.toggle('open'));
+  }
+
+  // Tabs "avec domaine / sans domaine" de la section installation
+  const tabButtons = document.querySelectorAll('.tab-switch button');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.install-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.pane).classList.add('active');
+    });
+  });
+
+  // Sommaire actif de la page documentation
   const tocLinks = Array.from(document.querySelectorAll('.docs-toc a'));
   if (tocLinks.length === 0) return;
   const sections = tocLinks

@@ -13,17 +13,23 @@
   <div class="container">
     <div class="brand"><img src="/assets/logo-dark-bg.jpg" alt="VPS Control"> VPS Control</div>
     <div class="nav-links">
-      <a href="/index.html">Accueil</a>
-      <a href="https://github.com/lordobitotech/vps-control" class="btn-github">GitHub</a>
+      <a href="/index.html" class="nav-link">Accueil</a>
+      <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
     </div>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+  <div class="mobile-menu">
+    <a href="/index.html">Accueil</a>
+    <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
   </div>
 </nav>
 
-<section style="padding-top:40px;">
+<section style="padding-top:36px;">
   <div class="container docs-layout">
     <aside class="docs-toc">
       <a href="#quickstart">Démarrage rapide</a>
-      <a href="#domaine">Domaine &amp; HTTPS</a>
+      <a href="#domaine">Domaine ou IP, HTTPS</a>
+      <a href="#maj">Mises à jour</a>
       <a href="#env">Variables d'environnement</a>
       <a href="#fonctionnalites">Fonctionnalités</a>
       <a href="#architecture">Architecture</a>
@@ -34,34 +40,64 @@
     <div class="docs-content">
       <h2 id="quickstart">Démarrage rapide</h2>
       <p>Sur un VPS Debian/Ubuntu fraîchement installé (root ou sudo) :</p>
-      <pre class="code-block"><code>curl -fsSL https://install.vpscontrol.lordobitotech.xyz | sudo bash</code></pre>
-      <p>Le script installe Docker et Go automatiquement si nécessaire, compile le
-      panel, crée les dossiers de travail et installe un service <code>systemd</code>
-      qui démarre VPS Control automatiquement (y compris après un redémarrage
-      du serveur).</p>
-      <p>Par défaut, le panel écoute uniquement sur <code>127.0.0.1:8090</code> (pas
-      exposé à internet). Pour tester immédiatement sans domaine, ouvrez un
-      tunnel SSH depuis votre machine :</p>
-      <pre class="code-block"><code>ssh -L 8090:localhost:8090 root@VOTRE_IP
-# puis ouvrez http://localhost:8090</code></pre>
-      <p>À la première visite, un écran vous invite à créer le premier compte
-      administrateur du panel — un identifiant propre à VPS Control, distinct
-      de vos accès SSH/root.</p>
+      <pre class="code-block"><code>curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash</code></pre>
+      <p>Le script installe Docker, Go et Nginx automatiquement si nécessaire,
+      compile le panel, crée les dossiers de travail et installe un service
+      <code>systemd</code> qui démarre VPS Control automatiquement (y compris
+      après un redémarrage du serveur). Il vous pose ensuite deux questions,
+      détaillées ci-dessous : le domaine (ou non) à utiliser, et si vous
+      voulez activer les mises à jour automatiques.</p>
+      <p>À la première visite du panel, un écran vous invite à créer le
+      premier compte administrateur — un identifiant propre à VPS Control,
+      distinct de vos accès SSH/root.</p>
+      <p>Vous préférez cloner le dépôt vous-même plutôt que passer par le
+      script en une commande ?</p>
+      <pre class="code-block"><code>git clone https://github.com/VPSControl/vps-control.git
+cd vps-control
+sudo bash scripts/install.sh</code></pre>
+      <p>Les deux méthodes lancent exactement le même installeur — celle du
+      haut le télécharge juste pour vous au préalable.</p>
 
-      <h2 id="domaine">Domaine &amp; HTTPS</h2>
-      <p>Pour exposer le panel proprement sur internet avec un certificat HTTPS
-      automatique, passez votre domaine à l'installeur :</p>
-      <pre class="code-block"><code>curl -fsSL https://install.vpscontrol.lordobitotech.xyz | sudo bash -s -- panel.mondomaine.com</code></pre>
-      <div class="warn">Pensez à pointer un enregistrement DNS de type <strong>A</strong> de
-      votre domaine vers l'adresse IP du VPS <em>avant ou juste après</em> cette
-      commande. Caddy (installé automatiquement) obtiendra et renouvellera le
-      certificat HTTPS tout seul dès que le DNS résout correctement.</div>
-      <p>Si vous avez déjà installé le panel sans domaine, vous pouvez relancer
-      l'installeur plus tard avec un domaine : il détecte l'installation
-      existante et se contente d'ajouter la configuration du reverse proxy.</p>
-      <p>Vous préférez gérer votre propre reverse proxy (Nginx, Traefik...) ?
-      Pointez-le simplement vers <code>127.0.0.1:8090</code> et laissez le champ
-      domaine vide lors de l'installation.</p>
+      <h2 id="domaine">Domaine ou IP, HTTPS</h2>
+      <p>Pendant l'installation, une question vous est posée :</p>
+      <pre class="code-block"><code>Nom de domaine pointant déjà vers ce VPS (laisser vide pour utiliser directement l'IP du serveur) :</code></pre>
+
+      <p><strong>Vous avez un nom de domaine</strong> — entrez-le. L'installeur configure
+      Nginx puis lance Certbot pour obtenir un certificat Let's Encrypt. Certbot
+      vous posera lui-même ses questions habituelles (email de contact,
+      acceptation des conditions) exactement comme si vous l'aviez lancé à la
+      main.</p>
+      <div class="callout">Pensez à pointer un enregistrement DNS de type <strong>A</strong> vers l'IP
+      du VPS avant de lancer l'installation (ou juste après — vous pouvez
+      relancer Certbot ensuite avec <code>sudo certbot --nginx -d votredomaine.com</code>).</div>
+
+      <p><strong>Vous n'avez pas de domaine</strong> — laissez vide et appuyez sur Entrée.
+      L'installeur vous demande alors un port (8443 par défaut), génère un
+      certificat auto-signé et configure Nginx pour servir le panel en HTTPS
+      directement sur l'IP du VPS :</p>
+      <pre class="code-block"><code>https://VOTRE_IP:8443</code></pre>
+      <div class="callout">Avec un certificat auto-signé, le navigateur affiche un avertissement
+      de sécurité la première fois — c'est normal, cliquez sur « avancé » puis
+      « continuer ». Vous pourrez toujours passer à un vrai domaine plus tard
+      en relançant l'installeur.</div>
+
+      <h2 id="maj">Mises à jour</h2>
+      <p>L'installeur demande aussi si vous voulez activer les mises à jour
+      automatiques quotidiennes. Trois façons de mettre à jour VPS Control,
+      dans tous les cas :</p>
+      <ul>
+        <li><strong>Depuis le panel</strong> — un bouton dans l'onglet Système déclenche
+        <code>git pull</code> + recompilation + redémarrage du service, sans avoir à
+        vous reconnecter en SSH.</li>
+        <li><strong>Automatiquement</strong> — si activé à l'installation, un minuteur
+        systemd (<code>vpscontrol-update.timer</code>) vérifie une fois par jour et
+        met à jour tout seul s'il y a du nouveau.</li>
+        <li><strong>Manuellement en SSH</strong> — à tout moment :
+        <code>sudo bash /opt/vpscontrol-src/scripts/update.sh</code></li>
+      </ul>
+      <p>Dans les trois cas, la mise à jour ne redémarre le service que si la
+      recompilation réussit — en cas d'erreur, le panel continue de tourner
+      sur la version précédente.</p>
 
       <h2 id="env">Variables d'environnement</h2>
       <p>Modifiables dans <code>/etc/systemd/system/vpscontrol.service</code> puis
@@ -69,10 +105,12 @@
       <table>
         <thead><tr><th>Variable</th><th>Par défaut</th><th>Rôle</th></tr></thead>
         <tbody>
-          <tr><td><code>VPSCONTROL_LISTEN</code></td><td><code>127.0.0.1:8090</code></td><td>Adresse d'écoute du panel</td></tr>
+          <tr><td><code>VPSCONTROL_LISTEN</code></td><td><code>127.0.0.1:8090</code></td><td>Adresse d'écoute du panel (Nginx fait le reverse proxy)</td></tr>
           <tr><td><code>VPSCONTROL_DATA_DIR</code></td><td><code>/opt/vpscontrol/data</code></td><td>Comptes, connexions DB, déploiements (JSON)</td></tr>
           <tr><td><code>VPSCONTROL_DEPLOY_ROOT</code></td><td><code>/opt/vpscontrol/apps</code></td><td>Dossier des applications déployées</td></tr>
           <tr><td><code>VPSCONTROL_FILES_ROOT</code></td><td><code>/home</code></td><td>Racine exposée par le gestionnaire de fichiers</td></tr>
+          <tr><td><code>VPSCONTROL_SRC_DIR</code></td><td><code>/opt/vpscontrol-src</code></td><td>Dossier du code source (utilisé pour les mises à jour)</td></tr>
+          <tr><td><code>VPSCONTROL_REPO_URL</code></td><td><code>github.com/VPSControl/vps-control</code></td><td>Dépôt d'origine, utilisé pour détecter les nouvelles versions</td></tr>
         </tbody>
       </table>
 
@@ -84,6 +122,7 @@
         <li>Déploiement depuis un dépôt GitHub public ou un fichier .zip, avec détection automatique du stack</li>
         <li>Création rapide d'une base MySQL ou PostgreSQL en conteneur</li>
         <li>Navigateur de base de données (tables, lignes, requêtes SQL libres)</li>
+        <li>Mises à jour en un clic depuis le panel, ou automatiques</li>
       </ul>
 
       <h2 id="architecture">Architecture</h2>
@@ -94,7 +133,9 @@
       à faire tourner pour le panel lui-même. Chaque application déployée
       tourne dans son propre conteneur Docker, ce qui isole les apps entre
       elles et permet au panel de piloter leur cycle de vie (start/stop/
-      restart) via la CLI Docker.</p>
+      restart) via la CLI Docker. Nginx sert de reverse proxy et termine le
+      TLS (Let's Encrypt via Certbot, ou certificat auto-signé pour un accès
+      direct par IP).</p>
 
       <h2 id="limites">Limites connues</h2>
       <ul class="check-list">
@@ -120,11 +161,11 @@
 
 <footer>
   <div class="container">
-    <div>
+    <div class="footer-links">
       <a href="/index.html">Accueil</a>
-      <a href="https://github.com/lordobitotech/vps-control">GitHub</a>
+      <a href="https://github.com/VPSControl/vps-control">GitHub</a>
     </div>
-    <p style="margin-top:14px;">VPS Control — projet open source.</p>
+    <p class="footer-note">VPS Control — projet open source, sous licence MIT.</p>
   </div>
 </footer>
 
