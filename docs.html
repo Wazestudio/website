@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation — VPS Control</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <div class="brand"><img src="/assets/logo-dark-bg.jpg" alt="VPS Control"> VPS Control</div>
+    <div class="nav-links">
+      <a href="/index.html">Accueil</a>
+      <a href="https://github.com/lordobitotech/vps-control" class="btn-github">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<section style="padding-top:40px;">
+  <div class="container docs-layout">
+    <aside class="docs-toc">
+      <a href="#quickstart">Démarrage rapide</a>
+      <a href="#domaine">Domaine &amp; HTTPS</a>
+      <a href="#env">Variables d'environnement</a>
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#limites">Limites connues</a>
+      <a href="#roadmap">Roadmap</a>
+    </aside>
+
+    <div class="docs-content">
+      <h2 id="quickstart">Démarrage rapide</h2>
+      <p>Sur un VPS Debian/Ubuntu fraîchement installé (root ou sudo) :</p>
+      <pre class="code-block"><code>curl -fsSL https://install.vpscontrol.lordobitotech.xyz | sudo bash</code></pre>
+      <p>Le script installe Docker et Go automatiquement si nécessaire, compile le
+      panel, crée les dossiers de travail et installe un service <code>systemd</code>
+      qui démarre VPS Control automatiquement (y compris après un redémarrage
+      du serveur).</p>
+      <p>Par défaut, le panel écoute uniquement sur <code>127.0.0.1:8090</code> (pas
+      exposé à internet). Pour tester immédiatement sans domaine, ouvrez un
+      tunnel SSH depuis votre machine :</p>
+      <pre class="code-block"><code>ssh -L 8090:localhost:8090 root@VOTRE_IP
+# puis ouvrez http://localhost:8090</code></pre>
+      <p>À la première visite, un écran vous invite à créer le premier compte
+      administrateur du panel — un identifiant propre à VPS Control, distinct
+      de vos accès SSH/root.</p>
+
+      <h2 id="domaine">Domaine &amp; HTTPS</h2>
+      <p>Pour exposer le panel proprement sur internet avec un certificat HTTPS
+      automatique, passez votre domaine à l'installeur :</p>
+      <pre class="code-block"><code>curl -fsSL https://install.vpscontrol.lordobitotech.xyz | sudo bash -s -- panel.mondomaine.com</code></pre>
+      <div class="warn">Pensez à pointer un enregistrement DNS de type <strong>A</strong> de
+      votre domaine vers l'adresse IP du VPS <em>avant ou juste après</em> cette
+      commande. Caddy (installé automatiquement) obtiendra et renouvellera le
+      certificat HTTPS tout seul dès que le DNS résout correctement.</div>
+      <p>Si vous avez déjà installé le panel sans domaine, vous pouvez relancer
+      l'installeur plus tard avec un domaine : il détecte l'installation
+      existante et se contente d'ajouter la configuration du reverse proxy.</p>
+      <p>Vous préférez gérer votre propre reverse proxy (Nginx, Traefik...) ?
+      Pointez-le simplement vers <code>127.0.0.1:8090</code> et laissez le champ
+      domaine vide lors de l'installation.</p>
+
+      <h2 id="env">Variables d'environnement</h2>
+      <p>Modifiables dans <code>/etc/systemd/system/vpscontrol.service</code> puis
+      <code>systemctl daemon-reload &amp;&amp; systemctl restart vpscontrol</code>.</p>
+      <table>
+        <thead><tr><th>Variable</th><th>Par défaut</th><th>Rôle</th></tr></thead>
+        <tbody>
+          <tr><td><code>VPSCONTROL_LISTEN</code></td><td><code>127.0.0.1:8090</code></td><td>Adresse d'écoute du panel</td></tr>
+          <tr><td><code>VPSCONTROL_DATA_DIR</code></td><td><code>/opt/vpscontrol/data</code></td><td>Comptes, connexions DB, déploiements (JSON)</td></tr>
+          <tr><td><code>VPSCONTROL_DEPLOY_ROOT</code></td><td><code>/opt/vpscontrol/apps</code></td><td>Dossier des applications déployées</td></tr>
+          <tr><td><code>VPSCONTROL_FILES_ROOT</code></td><td><code>/home</code></td><td>Racine exposée par le gestionnaire de fichiers</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="fonctionnalites">Fonctionnalités</h2>
+      <ul class="check-list">
+        <li>Comptes admin propres au panel, séparés du SSH/root, multi-comptes (admin / lecture seule)</li>
+        <li>Gestionnaire de fichiers web complet (parcourir, éditer, uploader, télécharger, supprimer)</li>
+        <li>Gestion des services Docker (start/stop/restart/suppression, logs)</li>
+        <li>Déploiement depuis un dépôt GitHub public ou un fichier .zip, avec détection automatique du stack</li>
+        <li>Création rapide d'une base MySQL ou PostgreSQL en conteneur</li>
+        <li>Navigateur de base de données (tables, lignes, requêtes SQL libres)</li>
+      </ul>
+
+      <h2 id="architecture">Architecture</h2>
+      <p>Le panel est un unique binaire Go : le frontend (HTML/CSS/JS vanilla)
+      est embarqué dedans via <code>go:embed</code>, donc rien à installer côté
+      Node ou build step. Les comptes, connexions aux bases et déploiements
+      sont stockés dans un simple fichier JSON local — pas de base de données
+      à faire tourner pour le panel lui-même. Chaque application déployée
+      tourne dans son propre conteneur Docker, ce qui isole les apps entre
+      elles et permet au panel de piloter leur cycle de vie (start/stop/
+      restart) via la CLI Docker.</p>
+
+      <h2 id="limites">Limites connues</h2>
+      <ul class="check-list">
+        <li>Un conteneur par application — pas d'orchestration multi-conteneurs automatique (pas de docker-compose généré)</li>
+        <li>Les mots de passe de connexion aux bases de données sont stockés en clair dans le fichier JSON local (permissions restreintes à root)</li>
+        <li>Pas encore de logs de build en direct pendant un déploiement</li>
+        <li>Le service tourne en root pour piloter Docker et parcourir les fichiers du système</li>
+        <li>Pas de rôles fins par déploiement (un compte "lecture seule" voit tout, sans découpage par projet)</li>
+      </ul>
+
+      <h2 id="roadmap">Roadmap</h2>
+      <ul class="check-list">
+        <li>Logs de build en streaming pendant le déploiement</li>
+        <li>Chiffrement au repos des mots de passe de connexions aux bases</li>
+        <li>Templates docker-compose pour les stacks multi-conteneurs (app + DB + cache)</li>
+        <li>Webhooks GitHub pour redéployer automatiquement à chaque push</li>
+        <li>Historique des déploiements avec rollback</li>
+        <li>Statistiques CPU/RAM par conteneur sur le tableau de bord</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div>
+      <a href="/index.html">Accueil</a>
+      <a href="https://github.com/lordobitotech/vps-control">GitHub</a>
+    </div>
+    <p style="margin-top:14px;">VPS Control — projet open source.</p>
+  </div>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

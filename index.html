@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPS Control — le panel d'administration open source pour votre VPS</title>
+<meta name="description" content="VPS Control est un panel web open source, léger (2 Go de RAM suffisent), pour gérer fichiers, services Docker, déploiements et bases de données de votre VPS.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <div class="brand"><img src="/assets/logo-dark-bg.jpg" alt="VPS Control"> VPS Control</div>
+    <div class="nav-links">
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#installation">Installation</a>
+      <a href="/docs.html">Documentation</a>
+      <a href="https://github.com/lordobitotech/vps-control" class="btn-github">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <img src="/assets/logo-dark-bg.jpg" alt="VPS Control" class="logo">
+    <h1>Gérez votre VPS depuis <span>le web</span>,<br>sans jamais toucher SFTP.</h1>
+    <p class="tagline">Fichiers, services Docker, déploiements Git/zip, bases de données — un panel open source unique, léger, taillé pour tourner sur un VPS à 2 Go de RAM.</p>
+    <div class="hero-ctas">
+      <a href="#installation" class="btn btn-primary">Installer maintenant</a>
+      <a href="/docs.html" class="btn btn-secondary">Voir la documentation</a>
+    </div>
+    <div class="code-box">
+      <code id="install-cmd">curl -fsSL https://install.vpscontrol.lordobitotech.xyz | sudo bash</code>
+      <button onclick="copyInstallCommand(this, document.getElementById('install-cmd').textContent)">Copier</button>
+    </div>
+  </div>
+</header>
+
+<section id="fonctionnalites">
+  <div class="container">
+    <h2 class="section-title">Tout ce qu'il faut, rien de superflu</h2>
+    <p class="section-sub">Un seul binaire Go, aucune dépendance lourde pour le panel lui-même.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="icon">📁</span>
+        <h3>Gestionnaire de fichiers</h3>
+        <p>Parcourez, éditez, uploadez et supprimez des fichiers directement depuis le navigateur — plus besoin de client SFTP.</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🐳</span>
+        <h3>Services Docker</h3>
+        <p>Démarrez, arrêtez, redémarrez ou supprimez vos conteneurs d'un clic, et consultez leurs logs en direct.</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🚀</span>
+        <h3>Déploiement en un clic</h3>
+        <p>Déployez depuis un dépôt GitHub public ou une archive .zip. Détection automatique du stack (Laravel, Node, Python, statique).</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🗄️</span>
+        <h3>Navigateur de bases de données</h3>
+        <p>Connectez une base MySQL ou PostgreSQL, parcourez les tables, éditez les lignes, exécutez des requêtes SQL libres.</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🔐</span>
+        <h3>Comptes admin dédiés</h3>
+        <p>Identifiants propres au panel, séparés du SSH/root du serveur. Multi-comptes admin ou lecture seule.</p>
+      </div>
+      <div class="feature-card">
+        <span class="icon">🪶</span>
+        <h3>Vraiment léger</h3>
+        <p>Un binaire Go unique, stockage JSON local, pas de base de données à faire tourner pour le panel. Confortable dès 2 Go de RAM.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="installation" class="alt">
+  <div class="container">
+    <h2 class="section-title">Installation en une commande</h2>
+    <p class="section-sub">Sur un VPS Debian/Ubuntu fraîchement installé. Docker et Go sont installés automatiquement si besoin.</p>
+    <div class="code-box" style="margin-bottom:16px;">
+      <code id="install-cmd-2">curl -fsSL https://install.vpscontrol.lordobitotech.xyz | sudo bash</code>
+      <button onclick="copyInstallCommand(this, document.getElementById('install-cmd-2').textContent)">Copier</button>
+    </div>
+    <p style="text-align:center;color:var(--text-muted);font-size:14px;">
+      Avec un nom de domaine pour du HTTPS automatique :<br>
+      <code>curl -fsSL https://install.vpscontrol.lordobitotech.xyz | sudo bash -s -- panel.mondomaine.com</code>
+    </p>
+    <p style="text-align:center;margin-top:24px;">
+      <a href="/docs.html">Voir le guide d'installation détaillé →</a>
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="container" style="max-width:760px;">
+    <h2 class="section-title">Pourquoi VPS Control ?</h2>
+    <ul class="check-list">
+      <li>100% open source — le code vous appartient, hébergé sur votre propre VPS.</li>
+      <li>Aucun frais mensuel, aucun compte tiers requis.</li>
+      <li>Isolation par Docker : chaque application déployée tourne dans son propre conteneur.</li>
+      <li>Pensé pour les petits VPS : pas de Node/PHP/JVM à faire tourner pour le panel.</li>
+      <li>Simple à auditer : un backend Go d'une poignée de fichiers, un frontend JS sans framework.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div>
+      <a href="/docs.html">Documentation</a>
+      <a href="https://github.com/lordobitotech/vps-control">GitHub</a>
+      <a href="https://github.com/lordobitotech/vps-control/issues">Signaler un problème</a>
+    </div>
+    <p style="margin-top:14px;">VPS Control — projet open source.</p>
+  </div>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
