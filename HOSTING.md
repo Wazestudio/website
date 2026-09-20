@@ -1,7 +1,7 @@
 # Hosting the site and the installer
 
 This repo is deliberately **separate** from the panel's own repo
-([VPSControl/vps-control](https://github.com/VPSControl/vps-control)): it's
+([Wazestudio/vps-control](https://github.com/Wazestudio/vps-control)): it's
 a plain static site, it doesn't need Go or a build step, and it has no
 reason to live on the same VPS as your users' servers.
 
@@ -73,7 +73,7 @@ server again.
 ## Before you publish
 
 `installer/get.sh` and the site pages reference
-`https://github.com/VPSControl/vps-control` as the panel's repo — update
+`https://github.com/Wazestudio/vps-control` as the panel's repo — update
 this if you use a different org or repo name on GitHub. The variable to
 change in `installer/get.sh` is `REPO_URL` near the top of the file (or pass
 it via `VPSCONTROL_REPO_URL` at runtime).

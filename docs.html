@@ -14,13 +14,13 @@
     <div class="brand"><img src="/assets/logo-full.jpg" alt="VPS Control"> VPS Control</div>
     <div class="nav-links">
       <a href="/index.html" class="nav-link">Home</a>
-      <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
+      <a href="https://github.com/Wazestudio/vps-control" class="btn-github">GitHub</a>
     </div>
     <button class="nav-toggle" aria-label="Menu">☰</button>
   </div>
   <div class="mobile-menu">
     <a href="/index.html">Home</a>
-    <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
+    <a href="https://github.com/Wazestudio/vps-control" class="btn-github">GitHub</a>
   </div>
 </nav>
 
@@ -30,6 +30,7 @@
       <a href="#quickstart">Quickstart</a>
       <a href="#domain">Domain or IP, HTTPS</a>
       <a href="#updates">Updates</a>
+      <a href="#layout">File layout</a>
       <a href="#env">Environment variables</a>
       <a href="#features">Features</a>
       <a href="#architecture">Architecture</a>
@@ -45,13 +46,14 @@
       builds the panel, creates the working directories, and installs a
       <code>systemd</code> service that starts VPS Control automatically
       (including after a server reboot). It then asks you two questions,
-      covered below: which domain (or none) to use, and whether you want
-      automatic updates enabled.</p>
+      covered below: which domain (or none) to use, and whether to also
+      enable a daily safety-net update check on top of the instant GitHub
+      webhook described further down.</p>
       <p>On your first visit to the panel, a setup screen asks you to create
       the first admin account — an identity that belongs to VPS Control,
       separate from your SSH/root access.</p>
       <p>Prefer cloning the repository yourself instead of the one-liner?</p>
-      <pre class="code-block"><code>git clone https://github.com/VPSControl/vps-control.git
+      <pre class="code-block"><code>git clone https://github.com/Wazestudio/vps-control.git
 cd vps-control
 sudo bash scripts/install.sh</code></pre>
       <p>Both methods run the exact same installer — the one above just
@@ -80,21 +82,48 @@ sudo bash scripts/install.sh</code></pre>
       the installer.</div>
 
       <h2 id="updates">Updates</h2>
-      <p>The installer also asks whether you want daily automatic updates
-      enabled. Either way, there are three ways to update VPS Control:</p>
+      <p>VPS Control isn't a site you drop somewhere — it installs and runs
+      like a system service, the same way <code>nginx</code> or
+      <code>docker</code> do: a binary, a systemd unit, and well-known file
+      paths (see the layout table below). "Update" means: pull the new
+      code, rebuild the binary, restart the service — exactly like updating
+      any other service. Three ways to trigger that:</p>
       <ul>
-        <li><strong>From the panel</strong> — a button in the System tab triggers
-        <code>git pull</code> + rebuild + service restart, no need to reconnect
-        over SSH.</li>
-        <li><strong>Automatically</strong> — if enabled at install time, a systemd
-        timer (<code>vpscontrol-update.timer</code>) checks once a day and
-        updates on its own if there's something new.</li>
-        <li><strong>Manually over SSH</strong> — at any time:
-        <code>sudo bash /opt/vpscontrol-src/scripts/update.sh</code></li>
+        <li><strong>Instantly, on every push (GitHub webhook)</strong> — the
+        panel's System tab shows a payload URL and a secret; add them as a
+        webhook on the repo (Settings → Webhooks → Add webhook, content
+        type <code>application/json</code>, event "Just the push event")
+        and every push to GitHub is applied to the running service within
+        seconds.</li>
+        <li><strong>From the panel</strong> — a button in the System tab
+        triggers <code>git pull</code> + rebuild + service restart on
+        demand, no SSH needed.</li>
+        <li><strong>A daily safety-net check</strong> — if enabled at
+        install time, a systemd timer (<code>vpscontrol-update.timer</code>)
+        checks once a day and updates on its own in case a webhook push was
+        ever missed. Optional, off by default, since the webhook is the
+        primary path.</li>
       </ul>
-      <p>In all three cases, the update only restarts the service if the
-      rebuild succeeds — if something goes wrong, the panel keeps running on
-      the previous version.</p>
+      <p>In every case, the service only restarts if the rebuild succeeds —
+      if something goes wrong, the panel keeps running on the previous
+      version.</p>
+
+      <h2 id="layout">File layout</h2>
+      <p>Same idea as installing <code>nginx</code>: fixed, predictable
+      paths rather than files scattered wherever a deploy tool happens to
+      drop them.</p>
+      <table>
+        <thead><tr><th>What</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Binary</td><td><code>/usr/local/bin/vpscontrol</code></td></tr>
+          <tr><td>Source (used for updates)</td><td><code>/opt/vpscontrol-src</code></td></tr>
+          <tr><td>Data (accounts, DB connections, deployments, secrets)</td><td><code>/opt/vpscontrol/data</code></td></tr>
+          <tr><td>Deployed applications</td><td><code>/opt/vpscontrol/apps</code></td></tr>
+          <tr><td>systemd unit</td><td><code>/etc/systemd/system/vpscontrol.service</code></td></tr>
+          <tr><td>Nginx site config</td><td><code>/etc/nginx/sites-available/vpscontrol.conf</code></td></tr>
+          <tr><td>TLS</td><td>Let's Encrypt via Certbot (domain), or self-signed at <code>/etc/vpscontrol/ssl/</code> (IP)</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="env">Environment variables</h2>
       <p>Editable in <code>/etc/systemd/system/vpscontrol.service</code>, then
@@ -107,7 +136,7 @@ sudo bash scripts/install.sh</code></pre>
           <tr><td><code>VPSCONTROL_DEPLOY_ROOT</code></td><td><code>/opt/vpscontrol/apps</code></td><td>Folder where deployed applications live</td></tr>
           <tr><td><code>VPSCONTROL_FILES_ROOT</code></td><td><code>/home</code></td><td>Root directory exposed by the file manager</td></tr>
           <tr><td><code>VPSCONTROL_SRC_DIR</code></td><td><code>/opt/vpscontrol-src</code></td><td>Source code folder, used for updates</td></tr>
-          <tr><td><code>VPSCONTROL_REPO_URL</code></td><td><code>github.com/VPSControl/vps-control</code></td><td>Upstream repository, used to detect new versions</td></tr>
+          <tr><td><code>VPSCONTROL_REPO_URL</code></td><td><code>github.com/Wazestudio/vps-control</code></td><td>Upstream repository, used to detect new versions</td></tr>
         </tbody>
       </table>
 
@@ -119,7 +148,7 @@ sudo bash scripts/install.sh</code></pre>
         <li>Deployment from a public GitHub repo or a .zip file, with automatic stack detection</li>
         <li>Quick MySQL or PostgreSQL database creation in a container</li>
         <li>Database browser (tables, rows, free-form SQL queries)</li>
-        <li>One-click updates from the panel, or fully automatic</li>
+        <li>One-click updates from the panel, or instantly via a GitHub webhook on every push</li>
       </ul>
 
       <h2 id="architecture">Architecture</h2>
@@ -147,7 +176,7 @@ sudo bash scripts/install.sh</code></pre>
         <li>Streaming build logs (Server-Sent Events) during <code>docker build</code></li>
         <li>Encryption at rest for database connection passwords</li>
         <li>docker-compose templates for multi-container stacks (app + DB + cache)</li>
-        <li>GitHub webhooks to redeploy automatically on every push</li>
+        <li>GitHub webhooks to redeploy <em>your own deployed apps</em> automatically on every push (the panel itself already supports this for its own updates)</li>
         <li>Deployment history with rollback</li>
         <li>Per-container CPU/RAM stats on the dashboard</li>
       </ul>
@@ -159,7 +188,7 @@ sudo bash scripts/install.sh</code></pre>
   <div class="container">
     <div class="footer-links">
       <a href="/index.html">Home</a>
-      <a href="https://github.com/VPSControl/vps-control">GitHub</a>
+      <a href="https://github.com/Wazestudio/vps-control">GitHub</a>
     </div>
     <p class="footer-note">VPS Control — open source project, MIT licensed.</p>
     <div class="footer-credit">

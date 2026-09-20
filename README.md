@@ -2,12 +2,12 @@
 
 # VPS Control — marketing site
 
-The marketing site and documentation for [VPS Control](https://github.com/VPSControl/vps-control),
+The marketing site and documentation for [VPS Control](https://github.com/Wazestudio/vps-control),
 an open-source VPS admin panel. This repo is deliberately separate from the
 panel's own repo: it's a 100% static site (vanilla HTML/CSS/JS, no build
 step), it has no business sitting inside a Go project.
 
-Built by [Waze Studio](https://github.com/VPSControl).
+Built by [Waze Studio](https://github.com/Wazestudio).
 
 ## Contents
 

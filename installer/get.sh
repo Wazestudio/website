@@ -16,7 +16,7 @@
 #     | sudo VPSCONTROL_DOMAIN=panel.example.com VPSCONTROL_AUTO_UPDATE=yes bash
 set -euo pipefail
 
-REPO_URL="${VPSCONTROL_REPO_URL:-https://github.com/VPSControl/vps-control.git}"
+REPO_URL="${VPSCONTROL_REPO_URL:-https://github.com/Wazestudio/vps-control.git}"
 BRANCH="${VPSCONTROL_BRANCH:-main}"
 
 if [ "$(id -u)" -ne 0 ]; then
