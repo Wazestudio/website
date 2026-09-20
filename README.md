@@ -1,30 +1,30 @@
-<p align="center"><img src="assets/logo-dark-bg.jpg" width="140" alt="VPS Control"></p>
+<p align="center"><img src="assets/logo-full.jpg" width="220" alt="VPS Control"></p>
 
-# VPS Control — site vitrine
+# VPS Control — marketing site
 
-Le site vitrine et la documentation de [VPS Control](https://github.com/VPSControl/vps-control),
-un panel d'administration de VPS open source. Ce dépôt est volontairement
-séparé de celui du panel : c'est un site 100 % statique (HTML/CSS/JS
-vanilla, aucun build step), il n'a pas sa place dans le même dépôt qu'un
-projet Go.
+The marketing site and documentation for [VPS Control](https://github.com/VPSControl/vps-control),
+an open-source VPS admin panel. This repo is deliberately separate from the
+panel's own repo: it's a 100% static site (vanilla HTML/CSS/JS, no build
+step), it has no business sitting inside a Go project.
 
-## Contenu
+Built by [Waze Studio](https://github.com/VPSControl).
 
-- `index.html`, `docs.html`, `style.css`, `app.js`, `assets/` — le site, à héberger sur `vpscontrol.wazestudio.com`
-- `installer/get.sh` — le script à héberger en texte brut sur `install.vpscontrol.wazestudio.com`, pour permettre `curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash`
+## Contents
 
-Voir [`HOSTING.md`](HOSTING.md) pour la configuration Nginx complète des
-deux sous-domaines.
+- `index.html`, `docs.html`, `style.css`, `app.js`, `assets/` — the site, to be hosted on `vpscontrol.wazestudio.com`
+- `installer/get.sh` — the script to host as plain text on `install.vpscontrol.wazestudio.com`, so `curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash` works
 
-## Développement local
+See [`HOSTING.md`](HOSTING.md) for the full Nginx setup for both subdomains.
 
-Aucun outil requis, c'est du HTML/CSS/JS statique :
+## Local development
+
+No tooling required, it's static HTML/CSS/JS:
 
 ```bash
 python3 -m http.server 8000
-# puis ouvrez http://localhost:8000
+# then open http://localhost:8000
 ```
 
-## Licence
+## License
 
-MIT, comme le panel lui-même.
+MIT, same as the panel.

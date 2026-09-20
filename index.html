@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VPS Control — le panel d'administration open source pour votre VPS</title>
-<meta name="description" content="VPS Control est un panel web open source, léger (2 Go de RAM suffisent), pour gérer fichiers, services Docker, déploiements et bases de données de votre VPS.">
-<link rel="icon" href="data:,">
+<title>VPS Control — the open-source admin panel for your VPS</title>
+<meta name="description" content="VPS Control is an open-source, lightweight web panel (runs comfortably on 2GB of RAM) for managing files, Docker services, deployments and databases on your VPS.">
+<link rel="icon" type="image/jpeg" href="/assets/logo-icon.jpg">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
 <nav class="site-nav">
   <div class="container">
-    <div class="brand"><img src="/assets/logo-dark-bg.jpg" alt="VPS Control"> VPS Control</div>
+    <div class="brand"><img src="/assets/logo-full.jpg" alt="VPS Control"> VPS Control</div>
     <div class="nav-links">
-      <a href="#fonctionnalites" class="nav-link">Fonctionnalités</a>
+      <a href="#features" class="nav-link">Features</a>
       <a href="#installation" class="nav-link">Installation</a>
       <a href="/docs.html" class="nav-link">Documentation</a>
       <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
@@ -22,7 +22,7 @@
     <button class="nav-toggle" aria-label="Menu">☰</button>
   </div>
   <div class="mobile-menu">
-    <a href="#fonctionnalites">Fonctionnalités</a>
+    <a href="#features">Features</a>
     <a href="#installation">Installation</a>
     <a href="/docs.html">Documentation</a>
     <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
@@ -33,88 +33,88 @@
   <div class="container hero-grid">
     <div>
       <div class="eyebrow-line"><span class="dot"></span> Open source · MIT</div>
-      <h1>Pilotez votre VPS depuis<br>le web, pas depuis <span class="accent">SFTP</span>.</h1>
-      <p class="tagline">Fichiers, services Docker, déploiements Git ou zip, bases de données — un panel unique, léger, qui tourne à l'aise sur un VPS à 2 Go de RAM.</p>
+      <h1>Run your VPS from<br>the web, not from <span class="accent">SFTP</span>.</h1>
+      <p class="tagline">Files, Docker services, Git or zip deployments, databases — one lightweight panel that runs comfortably on a 2GB VPS.</p>
       <div class="hero-ctas">
-        <a href="#installation" class="btn btn-primary">Installer maintenant</a>
-        <a href="/docs.html" class="btn btn-secondary">Voir la documentation</a>
+        <a href="#installation" class="btn btn-primary">Install now</a>
+        <a href="/docs.html" class="btn btn-secondary">Read the docs</a>
       </div>
     </div>
     <div class="terminal">
       <div class="terminal-bar"><span></span><span></span><span></span></div>
       <div class="terminal-body">
         <div><span class="prompt">$ </span><span class="cmd typed">curl -fsSL install.vpscontrol.wazestudio.com | sudo bash</span></div>
-        <span class="out o1">✓ Docker installé</span>
-        <span class="out o2">✓ VPS Control compilé</span>
-        <span class="out o3">✓ Certificat HTTPS obtenu</span>
-        <span class="out o4">→ Panel prêt sur https://panel.exemple.com</span>
+        <span class="out o1">✓ Docker installed</span>
+        <span class="out o2">✓ VPS Control built</span>
+        <span class="out o3">✓ HTTPS certificate issued</span>
+        <span class="out o4">→ Panel ready at https://panel.example.com</span>
       </div>
     </div>
   </div>
 </header>
 
-<section id="comment-ca-marche">
+<section id="how-it-works">
   <div class="container">
     <div class="section-head center">
-      <h2>Trois étapes, un panel prêt à l'emploi</h2>
-      <p>Aucune configuration manuelle de reverse proxy ou de certificat à prévoir.</p>
+      <h2>Three steps, one ready-to-use panel</h2>
+      <p>No manual reverse proxy or certificate setup required.</p>
     </div>
     <div class="steps-grid">
       <div class="step-card">
         <div class="num">01</div>
-        <h3>Lancez l'installeur</h3>
-        <p>Une seule commande sur un VPS Debian/Ubuntu vierge. Docker, Go, Nginx et le certificat HTTPS sont pris en charge automatiquement.</p>
+        <h3>Run the installer</h3>
+        <p>A single command on a fresh Debian/Ubuntu VPS. Docker, Go, Nginx and the HTTPS certificate are all handled automatically.</p>
       </div>
       <div class="step-card">
         <div class="num">02</div>
-        <h3>Créez votre compte admin</h3>
-        <p>Un identifiant propre au panel, séparé de vos accès SSH/root. Ajoutez d'autres comptes ensuite si besoin.</p>
+        <h3>Create your admin account</h3>
+        <p>An identity that belongs to the panel, separate from your SSH/root access. Add more accounts later if needed.</p>
       </div>
       <div class="step-card">
         <div class="num">03</div>
-        <h3>Déployez votre première app</h3>
-        <p>Depuis un dépôt GitHub public ou une archive .zip. VPS Control détecte le stack et construit le conteneur pour vous.</p>
+        <h3>Deploy your first app</h3>
+        <p>From a public GitHub repo or a .zip archive. VPS Control detects the stack and builds the container for you.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="fonctionnalites" class="alt">
+<section id="features" class="alt">
   <div class="container">
     <div class="section-head center">
-      <h2>Tout ce qu'il faut, rien de superflu</h2>
-      <p>Un seul binaire Go, aucune dépendance lourde pour le panel lui-même.</p>
+      <h2>Everything you need, nothing you don't</h2>
+      <p>A single Go binary, no heavy dependency for the panel itself.</p>
     </div>
     <div class="features-grid">
       <div class="feature-card">
         <div class="icon-badge">📁</div>
-        <h3>Gestionnaire de fichiers</h3>
-        <p>Parcourez, éditez, uploadez et supprimez des fichiers directement depuis le navigateur — plus besoin de client SFTP.</p>
+        <h3>File manager</h3>
+        <p>Browse, edit, upload and delete files straight from the browser — no more SFTP client.</p>
       </div>
       <div class="feature-card">
         <div class="icon-badge">🐳</div>
-        <h3>Services Docker</h3>
-        <p>Démarrez, arrêtez, redémarrez ou supprimez vos conteneurs d'un clic, et consultez leurs logs en direct.</p>
+        <h3>Docker services</h3>
+        <p>Start, stop, restart or remove your containers with one click, and check their logs live.</p>
       </div>
       <div class="feature-card">
         <div class="icon-badge">🚀</div>
-        <h3>Déploiement en un clic</h3>
-        <p>Depuis un dépôt GitHub public ou une archive .zip, avec détection automatique du stack (Laravel, Node, Python, statique).</p>
+        <h3>One-click deployment</h3>
+        <p>From a public GitHub repo or a .zip archive, with automatic stack detection (Laravel, Node, Python, static).</p>
       </div>
       <div class="feature-card">
         <div class="icon-badge">🗄️</div>
-        <h3>Navigateur de bases de données</h3>
-        <p>Connectez une base MySQL ou PostgreSQL, parcourez les tables, éditez les lignes, exécutez des requêtes SQL libres.</p>
+        <h3>Database browser</h3>
+        <p>Connect a MySQL or PostgreSQL database, browse tables, edit rows, run free-form SQL queries.</p>
       </div>
       <div class="feature-card">
         <div class="icon-badge">🔐</div>
-        <h3>Comptes admin dédiés</h3>
-        <p>Identifiants propres au panel, séparés du SSH/root du serveur. Multi-comptes, admin ou lecture seule.</p>
+        <h3>Dedicated admin accounts</h3>
+        <p>Credentials that belong to the panel, separate from your server's SSH/root access. Multiple accounts, admin or read-only.</p>
       </div>
       <div class="feature-card">
         <div class="icon-badge">🔄</div>
-        <h3>Mises à jour intégrées</h3>
-        <p>Un bouton dans le panel (ou un minuteur automatique quotidien, si vous l'activez) recompile et redémarre depuis GitHub.</p>
+        <h3>Built-in updates</h3>
+        <p>A button in the panel (or a daily timer, if you enable it) pulls, rebuilds and restarts from GitHub.</p>
       </div>
     </div>
   </div>
@@ -123,31 +123,31 @@
 <section id="installation">
   <div class="container">
     <div class="section-head center">
-      <h2>Installation en une commande</h2>
-      <p>Sur un VPS Debian/Ubuntu fraîchement installé. Docker, Go et Nginx sont installés automatiquement si besoin.</p>
+      <h2>Install with a single command</h2>
+      <p>On a fresh Debian/Ubuntu VPS. Docker, Go and Nginx are installed automatically if needed.</p>
     </div>
     <div class="install-tabs">
       <div class="tab-switch">
-        <button class="active" data-pane="pane-domain">Avec un nom de domaine</button>
-        <button data-pane="pane-ip">Directement par IP</button>
+        <button class="active" data-pane="pane-domain">With a domain name</button>
+        <button data-pane="pane-ip">Directly by IP</button>
       </div>
       <div id="pane-domain" class="install-pane active">
         <div class="code-box">
           <code id="cmd-domain">curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash</code>
-          <button onclick="copyInstallCommand(this, document.getElementById('cmd-domain').textContent)">Copier</button>
+          <button onclick="copyInstallCommand(this, document.getElementById('cmd-domain').textContent)">Copy</button>
         </div>
-        <p class="install-note">L'installeur vous demande votre domaine, puis obtient un certificat HTTPS via Let's Encrypt (Certbot) — il vous posera lui-même les questions habituelles (email, conditions d'utilisation).</p>
+        <p class="install-note">The installer asks for your domain, then obtains an HTTPS certificate via Let's Encrypt (Certbot) — it will ask its own usual questions (email, terms of service) itself.</p>
       </div>
       <div id="pane-ip" class="install-pane">
         <div class="code-box">
           <code id="cmd-ip">curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash</code>
-          <button onclick="copyInstallCommand(this, document.getElementById('cmd-ip').textContent)">Copier</button>
+          <button onclick="copyInstallCommand(this, document.getElementById('cmd-ip').textContent)">Copy</button>
         </div>
-        <p class="install-note">Répondez simplement Entrée à la question du domaine : le panel sera accessible en HTTPS via l'IP du VPS et un port de votre choix (certificat auto-signé).</p>
+        <p class="install-note">Just press Enter at the domain question: the panel becomes available over HTTPS via the VPS's IP and a port of your choice (self-signed certificate).</p>
       </div>
     </div>
     <p style="text-align:center;margin-top:28px;">
-      <a href="/docs.html">Voir le guide d'installation détaillé →</a>
+      <a href="/docs.html">See the detailed installation guide →</a>
     </p>
   </div>
 </section>
@@ -155,14 +155,14 @@
 <section class="alt">
   <div class="container" style="max-width:760px;">
     <div class="section-head center">
-      <h2>Pourquoi VPS Control ?</h2>
+      <h2>Why VPS Control?</h2>
     </div>
     <ul class="check-list">
-      <li>100 % open source — le code vous appartient, hébergé sur votre propre VPS.</li>
-      <li>Aucun frais mensuel, aucun compte tiers requis.</li>
-      <li>Isolation par Docker : chaque application déployée tourne dans son propre conteneur.</li>
-      <li>Pensé pour les petits VPS : pas de Node/PHP/JVM à faire tourner pour le panel.</li>
-      <li>Simple à auditer : un backend Go d'une poignée de fichiers, un frontend JS sans framework.</li>
+      <li>100% open source — the code is yours, hosted on your own VPS.</li>
+      <li>No monthly fee, no third-party account required.</li>
+      <li>Docker isolation: every deployed application runs in its own container.</li>
+      <li>Built for small VPS instances: no Node/PHP/JVM to run for the panel itself.</li>
+      <li>Easy to audit: a handful of Go files on the backend, a framework-free JS frontend.</li>
     </ul>
   </div>
 </section>
@@ -172,9 +172,13 @@
     <div class="footer-links">
       <a href="/docs.html">Documentation</a>
       <a href="https://github.com/VPSControl/vps-control">GitHub</a>
-      <a href="https://github.com/VPSControl/vps-control/issues">Signaler un problème</a>
+      <a href="https://github.com/VPSControl/vps-control/issues">Report an issue</a>
     </div>
-    <p class="footer-note">VPS Control — projet open source, sous licence MIT.</p>
+    <p class="footer-note">VPS Control — open source project, MIT licensed.</p>
+    <div class="footer-credit">
+      <span>Built by</span>
+      <span class="waze-badge"><img src="/assets/waze-studio-logo.jpg" alt="Waze Studio"></span>
+    </div>
   </div>
 </footer>
 

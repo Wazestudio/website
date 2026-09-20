@@ -1,10 +1,10 @@
 /* ------------------------------------------------------------------
-   VPS Control — site vitrine
-   Direction : "console d'administration" — le sujet (un panel qui pilote
-   un serveur depuis un terminal) porte le choix d'une display face
-   monospace pour les titres, sur un fond vert-sombre proche du logo,
-   avec une seule vraie animation (le terminal qui "tape" la commande
-   d'installation dans le hero).
+   VPS Control — marketing site
+   Direction: "admin console" — the subject (a panel that drives a
+   server from a terminal) justifies a monospace display face for
+   headings, on a dark-green background close to the logo, with a
+   single real animation (the terminal "typing" the install command
+   in the hero).
 ------------------------------------------------------------------- */
 
 :root {
@@ -25,6 +25,10 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* Safety net: with min-width:0 applied below on grid items, this should
+   never be needed, but it costs nothing to guarantee no page ever scrolls
+   sideways on a phone. */
+html, body { max-width: 100%; overflow-x: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -89,6 +93,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing:
 /* ---- Hero ---- */
 .hero { padding: clamp(50px, 8vw, 100px) 0 70px; }
 .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
+.hero-grid > * { min-width: 0; } /* prevents grid blowout from the long command inside .terminal */
 @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
 
 .eyebrow-line { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; margin-bottom: 18px; }
@@ -119,7 +124,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing:
 }
 .terminal-bar { display: flex; gap: 6px; padding: 11px 14px; background: var(--bg-elevated); border-bottom: 1px solid var(--border); }
 .terminal-bar span { width: 10px; height: 10px; border-radius: 50%; background: #2a4535; }
-.terminal-body { padding: 20px; font-family: var(--font-display); font-size: 13px; line-height: 1.8; min-height: 200px; }
+.terminal-body { padding: 20px; font-family: var(--font-display); font-size: 13px; line-height: 1.8; min-height: 200px; overflow-x: auto; }
 .terminal-body .prompt { color: var(--text-muted); }
 .terminal-body .cmd { color: var(--text); }
 .terminal-body .out { color: var(--green); display: block; opacity: 0; animation: reveal 0.4s forwards; }
@@ -127,8 +132,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing:
 .terminal-body .out.o2 { animation-delay: 1.9s; }
 .terminal-body .out.o3 { animation-delay: 2.4s; }
 .terminal-body .out.o4 { animation-delay: 2.9s; color: var(--green-bright); font-weight: 600; }
-.typed { display: inline-block; overflow: hidden; white-space: nowrap; border-right: 2px solid var(--green); width: 0; animation: type 1.2s steps(28) forwards, blink 0.8s step-end infinite; }
-@keyframes type { to { width: 27ch; } }
+.typed { display: inline-block; overflow: hidden; white-space: nowrap; border-right: 2px solid var(--green); width: 0; animation: type 1.3s steps(56) forwards, blink 0.8s step-end infinite; }
+@keyframes type { to { width: 56ch; } }
 @keyframes blink { 50% { border-color: transparent; } }
 @keyframes reveal { to { opacity: 1; } }
 
@@ -145,8 +150,9 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing:
   font-family: var(--font-display);
   font-size: 13px;
   color: var(--green);
+  min-width: 0;
 }
-.code-box code { overflow-x: auto; white-space: pre; }
+.code-box code { overflow-x: auto; white-space: pre; min-width: 0; }
 .code-box button {
   background: var(--bg-elevated-2);
   border: 1px solid var(--border);
@@ -181,7 +187,7 @@ section.alt { background: var(--bg-elevated); border-top: 1px solid var(--border
 .section-head p { color: var(--text-muted); font-size: 15px; margin: 0; }
 .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
 
-/* ---- Steps (séquence légitime : 1-2-3) ---- */
+/* ---- Steps (a genuine 1-2-3 sequence) ---- */
 .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 @media (max-width: 800px) { .steps-grid { grid-template-columns: 1fr; } }
 .step-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; background: var(--bg); }
@@ -232,16 +238,30 @@ footer .container { display: flex; flex-direction: column; align-items: center; 
 footer .footer-links a { color: var(--text-muted); margin: 0 10px; font-size: 13.5px; }
 footer .footer-links a:hover { color: var(--green); }
 footer .footer-note { color: var(--text-muted); font-size: 12.5px; }
+.footer-credit { display: flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--text-muted); font-size: 12.5px; }
+.waze-badge { display: inline-flex; align-items: center; background: #fff; border-radius: 5px; padding: 3px 8px; line-height: 0; }
+.waze-badge img { height: 12px; width: auto; display: block; }
 
 /* ---- Docs page ---- */
 .docs-layout { display: grid; grid-template-columns: 220px 1fr; gap: 44px; align-items: start; }
-@media (max-width: 900px) { .docs-layout { grid-template-columns: 1fr; } .docs-toc { position: static !important; flex-direction: row !important; flex-wrap: wrap; gap: 8px !important; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; } }
+/* min-width:0 is the fix for the classic CSS-grid overflow bug: without it,
+   a grid item with a long unbreakable child (a <pre> code line, a wide
+   table) refuses to shrink below its content's natural width, which widens
+   the whole grid — and the page — past the viewport on a phone. */
+.docs-layout > * { min-width: 0; }
+@media (max-width: 900px) {
+  .docs-layout { grid-template-columns: 1fr; }
+  .docs-toc {
+    position: static !important; flex-direction: row !important; flex-wrap: wrap;
+    gap: 8px !important; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
+  }
+}
 .docs-toc { position: sticky; top: 90px; display: flex; flex-direction: column; gap: 4px; }
 .docs-toc a { color: var(--text-muted); font-size: 13.5px; padding: 7px 10px; border-radius: 6px; }
 .docs-toc a:hover, .docs-toc a.active { color: var(--green); background: var(--green-soft); text-decoration: none; }
 .docs-content h2 { font-size: 21px; margin-top: 48px; scroll-margin-top: 90px; }
 .docs-content h2:first-child { margin-top: 0; }
-.docs-content p, .docs-content li { font-size: 15px; }
+.docs-content p, .docs-content li { font-size: 15px; overflow-wrap: break-word; }
 .docs-content table { width: 100%; border-collapse: collapse; margin: 16px 0; display: block; overflow-x: auto; }
 .docs-content th, .docs-content td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 13.5px; white-space: nowrap; }
 .docs-content th { color: var(--text-muted); font-weight: 600; font-family: var(--font-display); }
@@ -249,4 +269,5 @@ footer .footer-note { color: var(--text-muted); font-size: 12.5px; }
 .docs-content .callout {
   border-left: 3px solid var(--green); background: var(--bg-elevated);
   padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 18px 0; color: var(--text-muted); font-size: 14px;
+  overflow-wrap: break-word;
 }

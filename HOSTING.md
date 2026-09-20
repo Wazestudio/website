@@ -1,29 +1,28 @@
-# Héberger le site et l'installeur
+# Hosting the site and the installer
 
-Ce dépôt est volontairement **séparé** de celui du panel
-([VPSControl/vps-control](https://github.com/VPSControl/vps-control)) : c'est
-un simple site statique, il n'a pas besoin de Go ni de build step, et il n'a
-aucune raison de vivre sur le même VPS que les serveurs de vos utilisateurs.
+This repo is deliberately **separate** from the panel's own repo
+([VPSControl/vps-control](https://github.com/VPSControl/vps-control)): it's
+a plain static site, it doesn't need Go or a build step, and it has no
+reason to live on the same VPS as your users' servers.
 
-Il contient deux choses distinctes à héberger séparément :
+It holds two distinct things to host separately:
 
-- la racine du dépôt → le site vitrine + documentation, à servir sur **vpscontrol.wazestudio.com**
-- `installer/get.sh` → le script à servir en texte brut sur **install.vpscontrol.wazestudio.com**
+- the root of the repo → the marketing site + docs, served on **vpscontrol.wazestudio.com**
+- `installer/get.sh` → the script served as plain text on **install.vpscontrol.wazestudio.com**
 
-Les deux peuvent tourner sur le même petit serveur, via Nginx + Certbot pour
-le HTTPS automatique.
+Both can run on the same small server, using Nginx + Certbot for automatic HTTPS.
 
-## 1. Site vitrine — vpscontrol.wazestudio.com
+## 1. Marketing site — vpscontrol.wazestudio.com
 
-Pointez un enregistrement DNS **A** de `vpscontrol.wazestudio.com` vers l'IP
-du serveur qui hébergera le site, puis :
+Point an **A** DNS record for `vpscontrol.wazestudio.com` at the IP of the
+server that will host the site, then:
 
 ```bash
 apt install -y nginx certbot python3-certbot-nginx
 mkdir -p /var/www/vpscontrol-site
-cp -r * /var/www/vpscontrol-site/    # depuis la racine de ce dépôt
+cp -r * /var/www/vpscontrol-site/    # from the root of this repo
 
-cat >/etc/nginx/sites-available/vpscontrol-site.conf <<'EOF'
+cat >/etc/nginx/sites-available/vpscontrol-site.conf <<'NGINX_SITE_CONF'
 server {
     listen 80;
     server_name vpscontrol.wazestudio.com;
@@ -31,30 +30,30 @@ server {
     index index.html;
     location / { try_files $uri $uri/ =404; }
 }
-EOF
+NGINX_SITE_CONF
 ln -sf /etc/nginx/sites-available/vpscontrol-site.conf /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 certbot --nginx -d vpscontrol.wazestudio.com
 ```
 
-C'est un site 100 % statique (HTML/CSS/JS vanilla, sans build step) : le
-mettre à jour, c'est juste recopier ce dépôt par-dessus `/var/www/vpscontrol-site`.
+It's a 100% static site (vanilla HTML/CSS/JS, no build step): updating it is
+just copying this repo over `/var/www/vpscontrol-site` again.
 
-## 2. Installeur curl — install.vpscontrol.wazestudio.com
+## 2. Curl installer — install.vpscontrol.wazestudio.com
 
-Il doit répondre en texte brut avec le contenu de `installer/get.sh`, pour
-que `curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash`
-fonctionne.
+It needs to respond with the plain-text content of `installer/get.sh`, so
+that `curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash`
+works.
 
-Pointez un enregistrement DNS **A** de `install.vpscontrol.wazestudio.com`
-vers l'IP du serveur, puis :
+Point an **A** DNS record for `install.vpscontrol.wazestudio.com` at the
+server's IP, then:
 
 ```bash
 mkdir -p /var/www/vpscontrol-install
 cp installer/get.sh /var/www/vpscontrol-install/index.html
-# (le nommer index.html permet à Nginx de le servir directement à la racine)
+# (naming it index.html lets Nginx serve it directly at the root)
 
-cat >/etc/nginx/sites-available/vpscontrol-install.conf <<'EOF'
+cat >/etc/nginx/sites-available/vpscontrol-install.conf <<'NGINX_INSTALL_CONF'
 server {
     listen 80;
     server_name install.vpscontrol.wazestudio.com;
@@ -62,19 +61,19 @@ server {
     default_type text/plain;
     location / { try_files /index.html =404; }
 }
-EOF
+NGINX_INSTALL_CONF
 ln -sf /etc/nginx/sites-available/vpscontrol-install.conf /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 certbot --nginx -d install.vpscontrol.wazestudio.com
 ```
 
-À chaque changement de `installer/get.sh`, recopiez-le par-dessus
-`index.html` sur ce serveur.
+Every time `installer/get.sh` changes, copy it over `index.html` on this
+server again.
 
-## Avant de publier
+## Before you publish
 
-`installer/get.sh` et les pages du site référencent
-`https://github.com/VPSControl/vps-control` comme dépôt du panel — à adapter
-si vous changez d'organisation ou de nom de dépôt sur GitHub. La variable à
-changer dans `installer/get.sh` est `REPO_URL` en haut du fichier (ou à
-passer via `VPSCONTROL_REPO_URL` au moment de l'exécution).
+`installer/get.sh` and the site pages reference
+`https://github.com/VPSControl/vps-control` as the panel's repo — update
+this if you use a different org or repo name on GitHub. The variable to
+change in `installer/get.sh` is `REPO_URL` near the top of the file (or pass
+it via `VPSCONTROL_REPO_URL` at runtime).

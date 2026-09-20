@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Documentation — VPS Control</title>
-<link rel="icon" href="data:,">
+<link rel="icon" type="image/jpeg" href="/assets/logo-icon.jpg">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
 <nav class="site-nav">
   <div class="container">
-    <div class="brand"><img src="/assets/logo-dark-bg.jpg" alt="VPS Control"> VPS Control</div>
+    <div class="brand"><img src="/assets/logo-full.jpg" alt="VPS Control"> VPS Control</div>
     <div class="nav-links">
-      <a href="/index.html" class="nav-link">Accueil</a>
+      <a href="/index.html" class="nav-link">Home</a>
       <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
     </div>
     <button class="nav-toggle" aria-label="Menu">☰</button>
   </div>
   <div class="mobile-menu">
-    <a href="/index.html">Accueil</a>
+    <a href="/index.html">Home</a>
     <a href="https://github.com/VPSControl/vps-control" class="btn-github">GitHub</a>
   </div>
 </nav>
@@ -27,133 +27,129 @@
 <section style="padding-top:36px;">
   <div class="container docs-layout">
     <aside class="docs-toc">
-      <a href="#quickstart">Démarrage rapide</a>
-      <a href="#domaine">Domaine ou IP, HTTPS</a>
-      <a href="#maj">Mises à jour</a>
-      <a href="#env">Variables d'environnement</a>
-      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#quickstart">Quickstart</a>
+      <a href="#domain">Domain or IP, HTTPS</a>
+      <a href="#updates">Updates</a>
+      <a href="#env">Environment variables</a>
+      <a href="#features">Features</a>
       <a href="#architecture">Architecture</a>
-      <a href="#limites">Limites connues</a>
+      <a href="#limitations">Known limitations</a>
       <a href="#roadmap">Roadmap</a>
     </aside>
 
     <div class="docs-content">
-      <h2 id="quickstart">Démarrage rapide</h2>
-      <p>Sur un VPS Debian/Ubuntu fraîchement installé (root ou sudo) :</p>
+      <h2 id="quickstart">Quickstart</h2>
+      <p>On a fresh Debian/Ubuntu VPS (root or sudo):</p>
       <pre class="code-block"><code>curl -fsSL https://install.vpscontrol.wazestudio.com | sudo bash</code></pre>
-      <p>Le script installe Docker, Go et Nginx automatiquement si nécessaire,
-      compile le panel, crée les dossiers de travail et installe un service
-      <code>systemd</code> qui démarre VPS Control automatiquement (y compris
-      après un redémarrage du serveur). Il vous pose ensuite deux questions,
-      détaillées ci-dessous : le domaine (ou non) à utiliser, et si vous
-      voulez activer les mises à jour automatiques.</p>
-      <p>À la première visite du panel, un écran vous invite à créer le
-      premier compte administrateur — un identifiant propre à VPS Control,
-      distinct de vos accès SSH/root.</p>
-      <p>Vous préférez cloner le dépôt vous-même plutôt que passer par le
-      script en une commande ?</p>
+      <p>The script installs Docker, Go and Nginx automatically if needed,
+      builds the panel, creates the working directories, and installs a
+      <code>systemd</code> service that starts VPS Control automatically
+      (including after a server reboot). It then asks you two questions,
+      covered below: which domain (or none) to use, and whether you want
+      automatic updates enabled.</p>
+      <p>On your first visit to the panel, a setup screen asks you to create
+      the first admin account — an identity that belongs to VPS Control,
+      separate from your SSH/root access.</p>
+      <p>Prefer cloning the repository yourself instead of the one-liner?</p>
       <pre class="code-block"><code>git clone https://github.com/VPSControl/vps-control.git
 cd vps-control
 sudo bash scripts/install.sh</code></pre>
-      <p>Les deux méthodes lancent exactement le même installeur — celle du
-      haut le télécharge juste pour vous au préalable.</p>
+      <p>Both methods run the exact same installer — the one above just
+      downloads it for you first.</p>
 
-      <h2 id="domaine">Domaine ou IP, HTTPS</h2>
-      <p>Pendant l'installation, une question vous est posée :</p>
-      <pre class="code-block"><code>Nom de domaine pointant déjà vers ce VPS (laisser vide pour utiliser directement l'IP du serveur) :</code></pre>
+      <h2 id="domain">Domain or IP, HTTPS</h2>
+      <p>During installation, you'll be asked:</p>
+      <pre class="code-block"><code>Domain name already pointing at this VPS (leave empty to use the server's IP directly):</code></pre>
 
-      <p><strong>Vous avez un nom de domaine</strong> — entrez-le. L'installeur configure
-      Nginx puis lance Certbot pour obtenir un certificat Let's Encrypt. Certbot
-      vous posera lui-même ses questions habituelles (email de contact,
-      acceptation des conditions) exactement comme si vous l'aviez lancé à la
-      main.</p>
-      <div class="callout">Pensez à pointer un enregistrement DNS de type <strong>A</strong> vers l'IP
-      du VPS avant de lancer l'installation (ou juste après — vous pouvez
-      relancer Certbot ensuite avec <code>sudo certbot --nginx -d votredomaine.com</code>).</div>
+      <p><strong>You have a domain name</strong> — enter it. The installer configures
+      Nginx and then runs Certbot to obtain a Let's Encrypt certificate.
+      Certbot will ask its own usual questions (contact email, accepting the
+      terms) exactly as if you had run it by hand.</p>
+      <div class="callout">Remember to point an <strong>A</strong> DNS record at the VPS's IP
+      before running the installer (or right after — you can always rerun
+      Certbot later with <code>sudo certbot --nginx -d yourdomain.com</code>).</div>
 
-      <p><strong>Vous n'avez pas de domaine</strong> — laissez vide et appuyez sur Entrée.
-      L'installeur vous demande alors un port (8443 par défaut), génère un
-      certificat auto-signé et configure Nginx pour servir le panel en HTTPS
-      directement sur l'IP du VPS :</p>
-      <pre class="code-block"><code>https://VOTRE_IP:8443</code></pre>
-      <div class="callout">Avec un certificat auto-signé, le navigateur affiche un avertissement
-      de sécurité la première fois — c'est normal, cliquez sur « avancé » puis
-      « continuer ». Vous pourrez toujours passer à un vrai domaine plus tard
-      en relançant l'installeur.</div>
+      <p><strong>You don't have a domain</strong> — leave it empty and press Enter.
+      The installer then asks for a port (8443 by default), generates a
+      self-signed certificate, and configures Nginx to serve the panel over
+      HTTPS directly on the VPS's IP:</p>
+      <pre class="code-block"><code>https://YOUR_IP:8443</code></pre>
+      <div class="callout">With a self-signed certificate, the browser shows a security
+      warning the first time — that's expected, click "advanced" then
+      "proceed". You can always switch to a real domain later by rerunning
+      the installer.</div>
 
-      <h2 id="maj">Mises à jour</h2>
-      <p>L'installeur demande aussi si vous voulez activer les mises à jour
-      automatiques quotidiennes. Trois façons de mettre à jour VPS Control,
-      dans tous les cas :</p>
+      <h2 id="updates">Updates</h2>
+      <p>The installer also asks whether you want daily automatic updates
+      enabled. Either way, there are three ways to update VPS Control:</p>
       <ul>
-        <li><strong>Depuis le panel</strong> — un bouton dans l'onglet Système déclenche
-        <code>git pull</code> + recompilation + redémarrage du service, sans avoir à
-        vous reconnecter en SSH.</li>
-        <li><strong>Automatiquement</strong> — si activé à l'installation, un minuteur
-        systemd (<code>vpscontrol-update.timer</code>) vérifie une fois par jour et
-        met à jour tout seul s'il y a du nouveau.</li>
-        <li><strong>Manuellement en SSH</strong> — à tout moment :
+        <li><strong>From the panel</strong> — a button in the System tab triggers
+        <code>git pull</code> + rebuild + service restart, no need to reconnect
+        over SSH.</li>
+        <li><strong>Automatically</strong> — if enabled at install time, a systemd
+        timer (<code>vpscontrol-update.timer</code>) checks once a day and
+        updates on its own if there's something new.</li>
+        <li><strong>Manually over SSH</strong> — at any time:
         <code>sudo bash /opt/vpscontrol-src/scripts/update.sh</code></li>
       </ul>
-      <p>Dans les trois cas, la mise à jour ne redémarre le service que si la
-      recompilation réussit — en cas d'erreur, le panel continue de tourner
-      sur la version précédente.</p>
+      <p>In all three cases, the update only restarts the service if the
+      rebuild succeeds — if something goes wrong, the panel keeps running on
+      the previous version.</p>
 
-      <h2 id="env">Variables d'environnement</h2>
-      <p>Modifiables dans <code>/etc/systemd/system/vpscontrol.service</code> puis
+      <h2 id="env">Environment variables</h2>
+      <p>Editable in <code>/etc/systemd/system/vpscontrol.service</code>, then
       <code>systemctl daemon-reload &amp;&amp; systemctl restart vpscontrol</code>.</p>
       <table>
-        <thead><tr><th>Variable</th><th>Par défaut</th><th>Rôle</th></tr></thead>
+        <thead><tr><th>Variable</th><th>Default</th><th>Purpose</th></tr></thead>
         <tbody>
-          <tr><td><code>VPSCONTROL_LISTEN</code></td><td><code>127.0.0.1:8090</code></td><td>Adresse d'écoute du panel (Nginx fait le reverse proxy)</td></tr>
-          <tr><td><code>VPSCONTROL_DATA_DIR</code></td><td><code>/opt/vpscontrol/data</code></td><td>Comptes, connexions DB, déploiements (JSON)</td></tr>
-          <tr><td><code>VPSCONTROL_DEPLOY_ROOT</code></td><td><code>/opt/vpscontrol/apps</code></td><td>Dossier des applications déployées</td></tr>
-          <tr><td><code>VPSCONTROL_FILES_ROOT</code></td><td><code>/home</code></td><td>Racine exposée par le gestionnaire de fichiers</td></tr>
-          <tr><td><code>VPSCONTROL_SRC_DIR</code></td><td><code>/opt/vpscontrol-src</code></td><td>Dossier du code source (utilisé pour les mises à jour)</td></tr>
-          <tr><td><code>VPSCONTROL_REPO_URL</code></td><td><code>github.com/VPSControl/vps-control</code></td><td>Dépôt d'origine, utilisé pour détecter les nouvelles versions</td></tr>
+          <tr><td><code>VPSCONTROL_LISTEN</code></td><td><code>127.0.0.1:8090</code></td><td>Address the panel listens on (Nginx does the reverse proxying)</td></tr>
+          <tr><td><code>VPSCONTROL_DATA_DIR</code></td><td><code>/opt/vpscontrol/data</code></td><td>Accounts, DB connections, deployments (JSON)</td></tr>
+          <tr><td><code>VPSCONTROL_DEPLOY_ROOT</code></td><td><code>/opt/vpscontrol/apps</code></td><td>Folder where deployed applications live</td></tr>
+          <tr><td><code>VPSCONTROL_FILES_ROOT</code></td><td><code>/home</code></td><td>Root directory exposed by the file manager</td></tr>
+          <tr><td><code>VPSCONTROL_SRC_DIR</code></td><td><code>/opt/vpscontrol-src</code></td><td>Source code folder, used for updates</td></tr>
+          <tr><td><code>VPSCONTROL_REPO_URL</code></td><td><code>github.com/VPSControl/vps-control</code></td><td>Upstream repository, used to detect new versions</td></tr>
         </tbody>
       </table>
 
-      <h2 id="fonctionnalites">Fonctionnalités</h2>
+      <h2 id="features">Features</h2>
       <ul class="check-list">
-        <li>Comptes admin propres au panel, séparés du SSH/root, multi-comptes (admin / lecture seule)</li>
-        <li>Gestionnaire de fichiers web complet (parcourir, éditer, uploader, télécharger, supprimer)</li>
-        <li>Gestion des services Docker (start/stop/restart/suppression, logs)</li>
-        <li>Déploiement depuis un dépôt GitHub public ou un fichier .zip, avec détection automatique du stack</li>
-        <li>Création rapide d'une base MySQL ou PostgreSQL en conteneur</li>
-        <li>Navigateur de base de données (tables, lignes, requêtes SQL libres)</li>
-        <li>Mises à jour en un clic depuis le panel, ou automatiques</li>
+        <li>Admin accounts that belong to the panel, separate from SSH/root, multiple accounts (admin / read-only)</li>
+        <li>Full web-based file manager (browse, edit, upload, download, delete)</li>
+        <li>Docker service management (start/stop/restart/remove, logs)</li>
+        <li>Deployment from a public GitHub repo or a .zip file, with automatic stack detection</li>
+        <li>Quick MySQL or PostgreSQL database creation in a container</li>
+        <li>Database browser (tables, rows, free-form SQL queries)</li>
+        <li>One-click updates from the panel, or fully automatic</li>
       </ul>
 
       <h2 id="architecture">Architecture</h2>
-      <p>Le panel est un unique binaire Go : le frontend (HTML/CSS/JS vanilla)
-      est embarqué dedans via <code>go:embed</code>, donc rien à installer côté
-      Node ou build step. Les comptes, connexions aux bases et déploiements
-      sont stockés dans un simple fichier JSON local — pas de base de données
-      à faire tourner pour le panel lui-même. Chaque application déployée
-      tourne dans son propre conteneur Docker, ce qui isole les apps entre
-      elles et permet au panel de piloter leur cycle de vie (start/stop/
-      restart) via la CLI Docker. Nginx sert de reverse proxy et termine le
-      TLS (Let's Encrypt via Certbot, ou certificat auto-signé pour un accès
-      direct par IP).</p>
+      <p>The panel is a single Go binary: the frontend (vanilla HTML/CSS/JS)
+      is embedded into it via <code>go:embed</code>, so there's nothing to build
+      on the Node side. Accounts, database connections and deployments are
+      stored in a simple local JSON file — no database to run for the panel
+      itself. Every deployed application runs in its own Docker container,
+      which isolates apps from each other and lets the panel drive their
+      lifecycle (start/stop/restart) through the Docker CLI. Nginx acts as
+      the reverse proxy and terminates TLS (Let's Encrypt via Certbot, or a
+      self-signed certificate for direct IP access).</p>
 
-      <h2 id="limites">Limites connues</h2>
+      <h2 id="limitations">Known limitations</h2>
       <ul class="check-list">
-        <li>Un conteneur par application — pas d'orchestration multi-conteneurs automatique (pas de docker-compose généré)</li>
-        <li>Les mots de passe de connexion aux bases de données sont stockés en clair dans le fichier JSON local (permissions restreintes à root)</li>
-        <li>Pas encore de logs de build en direct pendant un déploiement</li>
-        <li>Le service tourne en root pour piloter Docker et parcourir les fichiers du système</li>
-        <li>Pas de rôles fins par déploiement (un compte "lecture seule" voit tout, sans découpage par projet)</li>
+        <li>One container per application — no automatic multi-container orchestration (no generated docker-compose)</li>
+        <li>Database connection passwords are stored in plain text in the local JSON file (permissions restricted to root, but not encrypted)</li>
+        <li>No live build logs yet during a deployment</li>
+        <li>The service runs as root to drive Docker and browse the system's files</li>
+        <li>No fine-grained roles per deployment (a "read-only" account sees everything, no per-project scoping)</li>
       </ul>
 
       <h2 id="roadmap">Roadmap</h2>
       <ul class="check-list">
-        <li>Logs de build en streaming pendant le déploiement</li>
-        <li>Chiffrement au repos des mots de passe de connexions aux bases</li>
-        <li>Templates docker-compose pour les stacks multi-conteneurs (app + DB + cache)</li>
-        <li>Webhooks GitHub pour redéployer automatiquement à chaque push</li>
-        <li>Historique des déploiements avec rollback</li>
-        <li>Statistiques CPU/RAM par conteneur sur le tableau de bord</li>
+        <li>Streaming build logs (Server-Sent Events) during <code>docker build</code></li>
+        <li>Encryption at rest for database connection passwords</li>
+        <li>docker-compose templates for multi-container stacks (app + DB + cache)</li>
+        <li>GitHub webhooks to redeploy automatically on every push</li>
+        <li>Deployment history with rollback</li>
+        <li>Per-container CPU/RAM stats on the dashboard</li>
       </ul>
     </div>
   </div>
@@ -162,10 +158,14 @@ sudo bash scripts/install.sh</code></pre>
 <footer>
   <div class="container">
     <div class="footer-links">
-      <a href="/index.html">Accueil</a>
+      <a href="/index.html">Home</a>
       <a href="https://github.com/VPSControl/vps-control">GitHub</a>
     </div>
-    <p class="footer-note">VPS Control — projet open source, sous licence MIT.</p>
+    <p class="footer-note">VPS Control — open source project, MIT licensed.</p>
+    <div class="footer-credit">
+      <span>Built by</span>
+      <span class="waze-badge"><img src="/assets/waze-studio-logo.jpg" alt="Waze Studio"></span>
+    </div>
   </div>
 </footer>
 

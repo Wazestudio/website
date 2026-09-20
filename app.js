@@ -1,12 +1,12 @@
 function copyInstallCommand(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
     const original = btn.textContent;
-    btn.textContent = 'Copié !';
+    btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = original; }, 1800);
   });
 }
 
-// Menu mobile (nav du site)
+// Mobile nav menu
 document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.querySelector('.nav-toggle');
   const menu = document.querySelector('.mobile-menu');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.addEventListener('click', () => menu.classList.toggle('open'));
   }
 
-  // Tabs "avec domaine / sans domaine" de la section installation
+  // "With a domain / by IP" tabs in the installation section
   const tabButtons = document.querySelectorAll('.tab-switch button');
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Sommaire actif de la page documentation
+  // Active table-of-contents entry on the docs page
   const tocLinks = Array.from(document.querySelectorAll('.docs-toc a'));
   if (tocLinks.length === 0) return;
   const sections = tocLinks
