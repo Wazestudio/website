@@ -29,6 +29,7 @@
     <aside class="docs-toc">
       <a href="#quickstart">Quickstart</a>
       <a href="#domain">Domain or IP, HTTPS</a>
+      <a href="#app-domains">Custom domains &amp; SSL per app</a>
       <a href="#updates">Updates</a>
       <a href="#layout">File layout</a>
       <a href="#env">Environment variables</a>
@@ -80,6 +81,31 @@ sudo bash scripts/install.sh</code></pre>
       warning the first time — that's expected, click "advanced" then
       "proceed". You can always switch to a real domain later by rerunning
       the installer.</div>
+
+      <h2 id="app-domains">Custom domains &amp; SSL per app</h2>
+      <p>Each deployed app has its own <strong>Domains</strong> tab. Point any
+      hostname at one of the app's ports and VPS Control does the rest,
+      directly on the host — no SSH needed:</p>
+      <ul class="check-list">
+        <li>Generates the Nginx reverse-proxy config for that domain and
+        enables it (<code>nginx -t</code> then a reload — nothing is applied
+        if the config is invalid)</li>
+        <li>Optionally requests a free Let's Encrypt certificate via Certbot
+        for that domain, right when you add it (or later, from the same
+        tab)</li>
+        <li>Shows the certificate status (HTTP only / active / error) and
+        lets you retry a failed request once your DNS is in place</li>
+        <li>Removing a domain deletes its Nginx config and certificate and
+        reloads Nginx</li>
+      </ul>
+      <div class="callout">Point the domain's <strong>A</strong> record at
+      the VPS's IP <em>before</em> requesting a certificate — Certbot has to
+      reach the server over HTTP to validate ownership. If it fails (DNS not
+      propagated yet), the domain still works over plain HTTP and you can
+      retry SSL from the same tab once the DNS is ready.</div>
+      <p>A domain can only be pointed at a port already allocated to that
+      app (its default port or one of its extra allocations) — not at an
+      arbitrary port on the server.</p>
 
       <h2 id="updates">Updates</h2>
       <p>VPS Control isn't a site you drop somewhere — it installs and runs
@@ -146,6 +172,7 @@ sudo bash scripts/install.sh</code></pre>
         <li>Full web-based file manager (browse, edit, upload, download, delete)</li>
         <li>Docker service management (start/stop/restart/remove, logs)</li>
         <li>Deployment from a public GitHub repo or a .zip file, with automatic stack detection</li>
+        <li>Custom domains per app, reverse-proxied through Nginx, with one-click Let's Encrypt SSL (Certbot) — all from the web</li>
         <li>Quick MySQL or PostgreSQL database creation in a container</li>
         <li>Database browser (tables, rows, free-form SQL queries)</li>
         <li>One-click updates from the panel, or instantly via a GitHub webhook on every push</li>
@@ -160,7 +187,8 @@ sudo bash scripts/install.sh</code></pre>
       which isolates apps from each other and lets the panel drive their
       lifecycle (start/stop/restart) through the Docker CLI. Nginx acts as
       the reverse proxy and terminates TLS (Let's Encrypt via Certbot, or a
-      self-signed certificate for direct IP access).</p>
+      self-signed certificate for direct IP access) — both for the panel
+      itself and for any custom domain you point at a deployed app.</p>
 
       <h2 id="limitations">Known limitations</h2>
       <ul class="check-list">
@@ -194,6 +222,10 @@ sudo bash scripts/install.sh</code></pre>
     <div class="footer-credit">
       <span>Built by</span>
       <span class="waze-badge"><img src="/assets/waze-studio-logo.jpg" alt="Waze Studio"></span>
+      <span>· Official partner</span>
+      <a href="https://www.lordobitotech.xyz" target="_blank" rel="noopener" class="partner-badge" title="Jean Steph Dev — official partner">
+        <img src="/assets/jean-steph-dev-logo.png" alt="Jean Steph Dev">
+      </a>
     </div>
   </div>
 </footer>
