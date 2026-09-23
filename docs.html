@@ -216,18 +216,9 @@ sudo bash scripts/install.sh</code></pre>
       the same cascade logic, scoped to that app.</p>
 
       <h2 id="app-domains">Custom domains &amp; SSL per app</h2>
-      <p>Each deployed app has its own <strong>Domains</strong> tab. Point any
-      hostname at one of the app's ports and VPS Control does the rest,
-      directly on the host — no SSH needed:</p>
-      <ul class="check-list">
-        <li>Generates the Nginx reverse-proxy config for that domain and
-        enables it (<code>nginx -t</code> then a reload — nothing is applied
-        if the config is invalid)</li>
-        <li>Optionally requests a free Let's Encrypt certificate via Certbot
-        for that domain, right when you add it (or later, from the same
-        tab)</li>
-        <li>Shows the certificate status (HTTP only / active / error) and
-        lets you retry a failed request once your DNS is in place</li>
+      <p>Each deployed <span class="waze-badge" style="background: #ffffff; padding: 8px 16px; border-radius: 8px; border: 1px solid #dce9df; display: inline-flex; align-items: center;">
+  <img src="/assets/waze-studio-logo.jpg" alt="Waze Studio" style="height: 32px; width: auto; display: block;">
+</span> you retry a failed request once your DNS is in place</li>
         <li>Removing a domain deletes its Nginx config and certificate and
         reloads Nginx</li>
       </ul>
@@ -371,8 +362,9 @@ sudo bash scripts/install.sh</code></pre>
     <div class="footer-credit">
       <span>Built by</span>
       <span class="waze-badge" style="background: #000000; padding: 8px 16px; border-radius: 8px; border: 1px solid #000000; display: inline-flex; align-items: center;">
-        <img src="/assets/waze-studio-logo.jpg" alt="Waze Studio" style="height: 32px; width: auto; display: block;">
-      </span>
+    <span class="waze-badge" style="background: #ffffff; padding: 8px 16px; border-radius: 8px; border: 1px solid #dce9df; display: inline-flex; align-items: center;">
+  <img src="/assets/waze-studio-logo.jpg" alt="Waze Studio" style="height: 32px; width: auto; display: block;">
+</span>
       <span>· Official partner</span>
       <a href="https://www.lordobitotech.xyz" target="_blank" rel="noopener" class="partner-badge" title="Jean Steph Dev — official partner">
         <img src="/assets/jean-steph-dev-logo.png" alt="Jean Steph Dev">
