@@ -29,6 +29,10 @@
     <aside class="docs-toc">
       <a href="#quickstart">Quickstart</a>
       <a href="#domain">Domain or IP, HTTPS</a>
+      <a href="#users">Users &amp; isolation</a>
+      <a href="#servers">Servers &amp; quotas</a>
+      <a href="#github">GitHub integration</a>
+      <a href="#cascade">Cascade deletion</a>
       <a href="#app-domains">Custom domains &amp; SSL per app</a>
       <a href="#updates">Updates</a>
       <a href="#layout">File layout</a>
@@ -81,6 +85,135 @@ sudo bash scripts/install.sh</code></pre>
       warning the first time — that's expected, click "advanced" then
       "proceed". You can always switch to a real domain later by rerunning
       the installer.</div>
+
+      <h2 id="users">Users &amp; isolation</h2>
+      <p>VPS Control has its own accounts, completely separate from your SSH
+      or root access. Two roles are available:</p>
+      <ul class="check-list">
+        <li><strong>Admin</strong> — can manage other panel accounts, create
+        servers, and access global system pages (all Docker containers, all
+        databases, activity log, system info). <strong>Admins do not
+        automatically see other users' apps.</strong></li>
+        <li><strong>Read-only (viewer)</strong> — sees only the dashboard,
+        the "My apps" list, the Deploy page, and their own API tokens.</li>
+      </ul>
+      <p><strong>Strict isolation</strong> — this is the core design rule:</p>
+      <ul>
+        <li>Every user (including admins) only sees the apps they own, plus
+        the ones where they've been invited as a collaborator.</li>
+        <li>An admin cannot open, edit, or even view another user's app
+        unless that user has sent them a collaboration link.</li>
+        <li>The dashboard's service / app counters are filtered per user —
+        no accidental leak of "who owns what" through counts.</li>
+      </ul>
+      <div class="callout">This is a deliberate change from many panels where
+      "admin" means "access to everything". If you're used to that model,
+      the first login may surprise you — you'll see <em>your</em> apps, not
+      everyone's.</div>
+
+      <p><strong>Inviting a collaborator to an app</strong> — from the app's
+      page, in the <em>Collaborators</em> tab. You pick permissions
+      (console, files read, files write, settings, backup) and generate a
+      link. The invited user accepts the link once, and from then on sees
+      only that specific app.</p>
+
+      <h2 id="servers">Servers &amp; quotas</h2>
+      <p>VPS Control uses a Pterodactyl-style layered model: instead of every
+      user deploying apps directly to the VPS, each app belongs to a
+      <strong>server</strong>, and each server belongs to a user.</p>
+      <ul class="check-list">
+        <li>Only <strong>admins</strong> create servers (from the
+        <em>Servers</em> page in the admin sidebar).</li>
+        <li>Each server has a name, an owner, and optional quotas:
+        <strong>disk (MB)</strong>, <strong>max number of apps</strong>,
+        <strong>RAM (MB, informational)</strong>, <strong>CPU quota (%
+        informational)</strong>.</li>
+        <li>One user can own <strong>multiple servers</strong> — for
+        instance "Prod" and "Staging".</li>
+        <li>When deploying an app, the user picks one of their servers.
+        Quotas are checked at that moment: if the server's app limit is
+        reached, or its disk quota is exceeded, the deployment is refused.</li>
+      </ul>
+
+      <p><strong>Which quotas are really enforced?</strong></p>
+      <table>
+        <thead><tr><th>Quota</th><th>Enforced?</th></tr></thead>
+        <tbody>
+          <tr><td>Disk (MB)</td><td>Yes — deployment refused if the server is over quota</td></tr>
+          <tr><td>Max apps</td><td>Yes — deployment refused when the limit is hit</td></tr>
+          <tr><td>RAM (MB)</td><td>No — informational only (the RAM is shared at the VPS level)</td></tr>
+          <tr><td>CPU quota (%)</td><td>No — informational only</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">A user with <strong>no server assigned</strong> cannot
+      deploy anything. The Deploy page shows a clear "Contact an admin"
+      message instead of the deployment forms.</div>
+
+      <p><strong>Deleting a server</strong> — you choose what happens to its
+      apps:</p>
+      <ul>
+        <li><strong>Delete them</strong> — containers, folders, backups and
+        Nginx vhosts are removed. Irreversible.</li>
+        <li><strong>Move them</strong> — you pick another server (same owner)
+        and all apps are moved there first, then the empty server is deleted.</li>
+      </ul>
+      <p>The confirmation modal shows exactly what will be removed (number
+      of apps, servers, backups, domains, disk used) before you click the
+      red button.</p>
+
+      <h2 id="github">GitHub integration</h2>
+      <p>To deploy private repos or organization repos, connect your GitHub
+      account using a <strong>Personal Access Token (PAT)</strong> — no
+      OAuth app to create, no callback URL, works immediately.</p>
+
+      <p><strong>Step 1 — create the token</strong> (on github.com):</p>
+      <ul>
+        <li>Go to <code>github.com/settings/tokens/new</code></li>
+        <li>Give it a name like <code>VPS Control</code></li>
+        <li>Check the <code>repo</code> scope (full control of private
+        repositories)</li>
+        <li>If you need organisation repos, also check
+        <code>read:org</code></li>
+        <li>Click <em>Generate token</em> and copy it — GitHub shows it only
+        once</li>
+      </ul>
+
+      <p><strong>Step 2 — connect it in the panel</strong>: go to
+      <em>API Tokens → GitHub</em> and paste the token.</p>
+
+      <p><strong>Step 3 — deploy</strong>: on the Deploy page, switch to
+      <em>My GitHub repos</em>. You'll see the full list of repos your token
+      can access, including private ones (marked with a 🔒) and organization
+      repos. Pick one, give it a name, pick a target server, and deploy.</p>
+
+      <div class="callout"><strong>Security:</strong> the token is stored
+      locally in the panel's JSON file (permissions <code>0600</code>,
+      root-only, same as the DB connection passwords). It is never returned
+      by the API once saved, and it is <strong>not</strong> written into
+      <code>.git/config</code> after the clone — the remote URL is reset to
+      the clean HTTPS URL once the repository has been fetched.</div>
+
+      <h2 id="cascade">Cascade deletion</h2>
+      <p>When an admin deletes a user from the <em>Users</em> page, a
+      confirmation modal first shows a preview of everything that will be
+      removed: number of servers, apps, backups, domains, and total disk
+      used.</p>
+      <p>Confirming removes <strong>all of it, cleanly</strong>:</p>
+      <ul class="check-list">
+        <li>Docker containers stopped and removed</li>
+        <li>Docker images tagged <code>vpscontrol-&lt;app&gt;</code> removed</li>
+        <li>Backup archives (<code>.tar.gz</code>) deleted from disk</li>
+        <li>Nginx vhosts and symlinks removed</li>
+        <li>Let's Encrypt certificates deleted (via Certbot)</li>
+        <li>App folders deleted from <code>/opt/vpscontrol/apps/</code></li>
+        <li>GitHub token, API tokens, subuser entries, invitations cleaned up</li>
+        <li>Servers owned by the user removed last</li>
+      </ul>
+      <div class="callout">Admins cannot delete their own account, and cannot
+      delete the last remaining admin. This prevents a panel lockout.</div>
+      <p>Deleting a single app (from its Settings tab → Danger zone) uses
+      the same cascade logic, scoped to that app.</p>
 
       <h2 id="app-domains">Custom domains &amp; SSL per app</h2>
       <p>Each deployed app has its own <strong>Domains</strong> tab. Point any
@@ -143,10 +276,12 @@ sudo bash scripts/install.sh</code></pre>
         <tbody>
           <tr><td>Binary</td><td><code>/usr/local/bin/vpscontrol</code></td></tr>
           <tr><td>Source (used for updates)</td><td><code>/opt/vpscontrol-src</code></td></tr>
-          <tr><td>Data (accounts, DB connections, deployments, secrets)</td><td><code>/opt/vpscontrol/data</code></td></tr>
+          <tr><td>Data (accounts, servers, DB connections, deployments, secrets)</td><td><code>/opt/vpscontrol/data</code></td></tr>
           <tr><td>Deployed applications</td><td><code>/opt/vpscontrol/apps</code></td></tr>
+          <tr><td>Backups</td><td><code>/opt/vpscontrol/backups</code></td></tr>
           <tr><td>systemd unit</td><td><code>/etc/systemd/system/vpscontrol.service</code></td></tr>
           <tr><td>Nginx site config</td><td><code>/etc/nginx/sites-available/vpscontrol.conf</code></td></tr>
+          <tr><td>Per-app custom domains</td><td><code>/etc/nginx/sites-available/vpscontrol-domain-&lt;hostname&gt;.conf</code></td></tr>
           <tr><td>TLS</td><td>Let's Encrypt via Certbot (domain), or self-signed at <code>/etc/vpscontrol/ssl/</code> (IP)</td></tr>
         </tbody>
       </table>
@@ -158,8 +293,9 @@ sudo bash scripts/install.sh</code></pre>
         <thead><tr><th>Variable</th><th>Default</th><th>Purpose</th></tr></thead>
         <tbody>
           <tr><td><code>VPSCONTROL_LISTEN</code></td><td><code>127.0.0.1:8090</code></td><td>Address the panel listens on (Nginx does the reverse proxying)</td></tr>
-          <tr><td><code>VPSCONTROL_DATA_DIR</code></td><td><code>/opt/vpscontrol/data</code></td><td>Accounts, DB connections, deployments (JSON)</td></tr>
+          <tr><td><code>VPSCONTROL_DATA_DIR</code></td><td><code>/opt/vpscontrol/data</code></td><td>Accounts, servers, DB connections, deployments (JSON)</td></tr>
           <tr><td><code>VPSCONTROL_DEPLOY_ROOT</code></td><td><code>/opt/vpscontrol/apps</code></td><td>Folder where deployed applications live</td></tr>
+          <tr><td><code>VPSCONTROL_BACKUP_ROOT</code></td><td><code>/opt/vpscontrol/backups</code></td><td>Folder where app backups are stored</td></tr>
           <tr><td><code>VPSCONTROL_FILES_ROOT</code></td><td><code>/home</code></td><td>Root directory exposed by the file manager</td></tr>
           <tr><td><code>VPSCONTROL_SRC_DIR</code></td><td><code>/opt/vpscontrol-src</code></td><td>Source code folder, used for updates</td></tr>
           <tr><td><code>VPSCONTROL_REPO_URL</code></td><td><code>github.com/Wazestudio/vps-control</code></td><td>Upstream repository, used to detect new versions</td></tr>
@@ -168,43 +304,56 @@ sudo bash scripts/install.sh</code></pre>
 
       <h2 id="features">Features</h2>
       <ul class="check-list">
-        <li>Admin accounts that belong to the panel, separate from SSH/root, multiple accounts (admin / read-only)</li>
+        <li>Multi-user with <strong>strict isolation</strong> — every user only sees their own apps, even panel admins</li>
+        <li>Per-user <strong>servers with quotas</strong> (disk, max apps) — Pterodactyl-style, enforced on deploy</li>
+        <li>Admin / read-only roles, panel accounts separate from SSH/root</li>
+        <li><strong>GitHub integration</strong> via Personal Access Token — deploy public and private repos, plus organization repos</li>
         <li>Full web-based file manager (browse, edit, upload, download, delete)</li>
         <li>Docker service management (start/stop/restart/remove, logs)</li>
-        <li>Deployment from a public GitHub repo or a .zip file, with automatic stack detection</li>
-        <li>Custom domains per app, reverse-proxied through Nginx, with one-click Let's Encrypt SSL (Certbot) — all from the web</li>
+        <li>Deployment from a public GitHub repo, a private one, or a .zip file, with automatic stack detection</li>
+        <li>Automatic <strong>subfolder detection</strong> for apps that live inside a folder in the repo</li>
+        <li>Custom domains per app, reverse-proxied through Nginx, with one-click Let's Encrypt SSL (Certbot)</li>
         <li>Quick MySQL or PostgreSQL database creation in a container</li>
         <li>Database browser (tables, rows, free-form SQL queries)</li>
+        <li><strong>Cascade deletion</strong> for users and servers — containers, images, folders, backups, vhosts, certificates</li>
         <li>One-click updates from the panel, or instantly via a GitHub webhook on every push</li>
+        <li>Upload limit: 30 MB per ZIP (configurable in Nginx)</li>
       </ul>
 
       <h2 id="architecture">Architecture</h2>
       <p>The panel is a single Go binary: the frontend (vanilla HTML/CSS/JS)
       is embedded into it via <code>go:embed</code>, so there's nothing to build
-      on the Node side. Accounts, database connections and deployments are
-      stored in a simple local JSON file — no database to run for the panel
-      itself. Every deployed application runs in its own Docker container,
-      which isolates apps from each other and lets the panel drive their
-      lifecycle (start/stop/restart) through the Docker CLI. Nginx acts as
-      the reverse proxy and terminates TLS (Let's Encrypt via Certbot, or a
-      self-signed certificate for direct IP access) — both for the panel
-      itself and for any custom domain you point at a deployed app.</p>
+      on the Node side. Accounts, servers, database connections and
+      deployments are stored in a simple local JSON file — no database to
+      run for the panel itself. Every deployed application runs in its own
+      Docker container, which isolates apps from each other and lets the
+      panel drive their lifecycle (start/stop/restart) through the Docker
+      CLI. Nginx acts as the reverse proxy and terminates TLS (Let's
+      Encrypt via Certbot, or a self-signed certificate for direct IP
+      access) — both for the panel itself and for any custom domain you
+      point at a deployed app.</p>
+      <p>The <strong>isolation model</strong> is enforced at the middleware
+      level: every request to an app's API endpoints first checks that the
+      caller either owns the app or has been invited as a collaborator.
+      Admins bypass this check only for global pages (Docker, users,
+      servers, activity), never for another user's app.</p>
 
       <h2 id="limitations">Known limitations</h2>
       <ul class="check-list">
         <li>One container per application — no automatic multi-container orchestration (no generated docker-compose)</li>
-        <li>Database connection passwords are stored in plain text in the local JSON file (permissions restricted to root, but not encrypted)</li>
+        <li>Database connection passwords and GitHub tokens are stored in plain text in the local JSON file (permissions restricted to root, but not encrypted at rest)</li>
+        <li>RAM and CPU quotas on servers are informational only — real enforcement still happens at the container level via per-app limits</li>
         <li>No live build logs yet during a deployment</li>
         <li>The service runs as root to drive Docker and browse the system's files</li>
-        <li>No fine-grained roles per deployment (a "read-only" account sees everything, no per-project scoping)</li>
+        <li>No fine-grained roles <em>within</em> an app for the owner — the granularity is between users (owner / collaborator), not inside a single user's account</li>
       </ul>
 
       <h2 id="roadmap">Roadmap</h2>
       <ul class="check-list">
         <li>Streaming build logs (Server-Sent Events) during <code>docker build</code></li>
-        <li>Encryption at rest for database connection passwords</li>
+        <li>Encryption at rest for database connection passwords and GitHub tokens</li>
         <li>docker-compose templates for multi-container stacks (app + DB + cache)</li>
-        <li>GitHub webhooks to redeploy <em>your own deployed apps</em> automatically on every push (the panel itself already supports this for its own updates)</li>
+        <li>Push from the panel to GitHub (commit edits made in the built-in editor)</li>
         <li>Deployment history with rollback</li>
         <li>Per-container CPU/RAM stats on the dashboard</li>
       </ul>
@@ -221,7 +370,9 @@ sudo bash scripts/install.sh</code></pre>
     <p class="footer-note">VPS Control — open source project, MIT licensed.</p>
     <div class="footer-credit">
       <span>Built by</span>
-      <span class="waze-badge"><img src="/assets/waze-studio-logo.jpg" alt="Waze Studio"></span>
+      <span class="waze-badge" style="background: #000000; padding: 8px 14px; border-radius: 6px; border-color: #000000;">
+        <img src="/assets/waze-studio-logo.png" alt="Waze Studio" style="height: 28px; width: auto; display: block;">
+      </span>
       <span>· Official partner</span>
       <a href="https://www.lordobitotech.xyz" target="_blank" rel="noopener" class="partner-badge" title="Jean Steph Dev — official partner">
         <img src="/assets/jean-steph-dev-logo.png" alt="Jean Steph Dev">
