@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VPS Control — the open-source admin panel for your VPS</title>
-<meta name="description" content="VPS Control is an open-source, lightweight web panel (runs comfortably on 2GB of RAM) for managing files, Docker services, deployments and databases on your VPS.">
+<meta name="description" content="VPS Control is an open-source, lightweight web panel (runs comfortably on 2GB of RAM) for managing files, Docker services, deployments and databases on your VPS. Multi-user with strict isolation, per-user servers with quotas, and native GitHub integration for private repos.">
 <link rel="icon" type="image/jpeg" href="/assets/logo-icon.jpg">
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -32,9 +32,9 @@
 <header class="hero">
   <div class="container hero-grid">
     <div>
-     
+
       <h1>Run your VPS from<br>the web, not from <span class="accent">SFTP</span>.</h1>
-      <p class="tagline">Files, Docker services, Git or zip deployments, databases — one lightweight panel that runs comfortably on a 2GB VPS.</p>
+      <p class="tagline">Files, Docker services, Git or zip deployments, databases — one lightweight panel that runs comfortably on a 2GB VPS. Now with multi-user isolation, per-user servers with quotas, and native GitHub integration.</p>
       <div class="hero-ctas">
         <a href="#installation" class="btn btn-primary">Install now</a>
         <a href="/docs.html" class="btn btn-secondary">Read the docs</a>
@@ -68,12 +68,12 @@
       <div class="step-card">
         <div class="num">02</div>
         <h3>Create your admin account</h3>
-        <p>An identity that belongs to the panel, separate from your SSH/root access. Add more accounts later if needed.</p>
+        <p>An identity that belongs to the panel, separate from your SSH/root access. Add more accounts later — each user only ever sees their own apps.</p>
       </div>
       <div class="step-card">
         <div class="num">03</div>
         <h3>Deploy your first app</h3>
-        <p>From a public GitHub repo or a .zip archive. VPS Control detects the stack and builds the container for you.</p>
+        <p>From a public GitHub repo, a private repo you've connected, or a .zip archive. VPS Control detects the stack and builds the container for you.</p>
       </div>
     </div>
   </div>
@@ -87,6 +87,21 @@
     </div>
     <div class="features-grid">
       <div class="feature-card">
+        <div class="icon-badge">👥</div>
+        <h3>Multi-user with strict isolation</h3>
+        <p>Create admin and read-only accounts. Every user sees only their own apps and servers — even panel admins can't reach another user's apps unless invited as a collaborator.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-badge">🖥️</div>
+        <h3>Per-user servers with quotas</h3>
+        <p>Admins create logical servers (disk quota, max apps) and assign them to users, Pterodactyl-style. Quotas are enforced on deployment — a user can't exceed their limit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-badge">🐙</div>
+        <h3>GitHub integration</h3>
+        <p>Connect your GitHub account with a Personal Access Token to list and deploy <strong>private repositories</strong> and organization repos, directly from the panel.</p>
+      </div>
+      <div class="feature-card">
         <div class="icon-badge">📁</div>
         <h3>File manager</h3>
         <p>Browse, edit, upload and delete files straight from the browser — no more SFTP client.</p>
@@ -99,7 +114,7 @@
       <div class="feature-card">
         <div class="icon-badge">🚀</div>
         <h3>One-click deployment</h3>
-        <p>From a public GitHub repo or a .zip archive, with automatic stack detection (Laravel, Node, Python, static).</p>
+        <p>From a public GitHub repo, a private one, or a .zip archive — with automatic stack detection (Laravel, Node, Python, static) and automatic subfolder detection.</p>
       </div>
       <div class="feature-card">
         <div class="icon-badge">🌐</div>
@@ -112,9 +127,9 @@
         <p>Connect a MySQL or PostgreSQL database, browse tables, edit rows, run free-form SQL queries.</p>
       </div>
       <div class="feature-card">
-        <div class="icon-badge">🔐</div>
-        <h3>Dedicated admin accounts</h3>
-        <p>Credentials that belong to the panel, separate from your server's SSH/root access. Multiple accounts, admin or read-only.</p>
+        <div class="icon-badge">🧹</div>
+        <h3>Clean cascade deletion</h3>
+        <p>Deleting a user or a server removes everything: containers, images, folders, backups, Nginx vhosts and SSL certificates. A preview shows you exactly what will be removed.</p>
       </div>
       <div class="feature-card">
         <div class="icon-badge">🔄</div>
@@ -166,6 +181,9 @@
       <li>100% open source — the code is yours, hosted on your own VPS.</li>
       <li>No monthly fee, no third-party account required.</li>
       <li>Docker isolation: every deployed application runs in its own container.</li>
+      <li>Real multi-user: admins manage users and servers; users only see their own apps.</li>
+      <li>Quota-enforced servers, so a VPS shared with teammates stays under control.</li>
+      <li>Native GitHub integration: deploy public and private repos without leaving the panel.</li>
       <li>Built for small VPS instances: no Node/PHP/JVM to run for the panel itself.</li>
       <li>Easy to audit: a handful of Go files on the backend, a framework-free JS frontend.</li>
     </ul>
@@ -182,7 +200,9 @@
     <p class="footer-note">VPS Control — open source project, MIT licensed.</p>
     <div class="footer-credit">
       <span>Built by</span>
-      <span class="waze-badge"><img src="/assets/waze-studio-logo.jpg" alt="Waze Studio"></span>
+      <span class="waze-badge" style="background: #000000; padding: 8px 14px; border-radius: 6px; border-color: #000000;">
+        <img src="/assets/waze-studio-logo.png" alt="Waze Studio" style="height: 28px; width: auto; display: block;">
+      </span>
       <span>· Official partner</span>
       <a href="https://www.lordobitotech.xyz" target="_blank" rel="noopener" class="partner-badge" title="Jean Steph Dev — official partner">
         <img src="/assets/jean-steph-dev-logo.png" alt="Jean Steph Dev">
